@@ -10,8 +10,8 @@ Also, this service is supposed to update ASD models. (request update from data s
 ### Main functions (To Do)
 #### Proof of Concept stage
 1. Provide gRPC API with methods:
-    * search(search string) ([]ApiSpecDefShort, error) to search by domain and description. Return a list of short descriptions.
-    * get(id long) ([]ApiSpecDef, error) to get the full API Spec document by id.
+    * search(search string, page int) (Page[ApiSpecDocShort], error) to search by domain and description. Return a list of short descriptions.
+    * get(id long) (ApiSpecDef, error) to get the full API Spec document by id.
 2. Process events from Rabbit MQ with ASD model:
     * retrieve events from Rabbit MQ with ASD model
     * save/update data in DB (set created_at/updated_at)
