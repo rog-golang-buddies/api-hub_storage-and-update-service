@@ -31,3 +31,7 @@ Also, this service is supposed to update ASD models. (request update from data s
    data scraper service -RabbitMQ-> storage and update service (-RabbitMQ->, -RabbitMQ->) (API Gateway, DB)
 3. Update stale data
    storage and update service -RabbitMQ-> data scraper service -RabbitMQ-> storage and update service -> DB
+
+### Additional resources
+1. Database schema
+    https://dbdiagram.io/d/630287b1f1a9b01b0fb26570 / https://imgur.com/a/evcpXry
