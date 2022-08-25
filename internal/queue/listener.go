@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/rog-golang-buddies/internal/config"
-	"github.com/rog-golang-buddies/internal/queue/handler"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/handler"
 	"github.com/wagslane/go-rabbitmq"
 )
 
@@ -44,7 +44,7 @@ func (listener *ListenerImpl) Start(
 
 	err := consumer.StartConsuming(
 		handl,
-		config.UrlRequestQueue,
+		config.SaveASDRequestQueue,
 		[]string{}, //No binding, consuming with the default exchange directly by queue name
 		rabbitmq.WithConsumeOptionsConcurrency(config.Concurrency),
 		rabbitmq.WithConsumeOptionsQueueDurable,

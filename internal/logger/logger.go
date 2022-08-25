@@ -1,6 +1,6 @@
 package logger
 
-import "github.com/rog-golang-buddies/internal/config"
+import "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 
 // Logger represents common logger interface
 //

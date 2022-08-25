@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/rog-golang-buddies/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"go.uber.org/zap"
 )
 

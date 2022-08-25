@@ -4,19 +4,17 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/publisher"
 	_ "github.com/rog-golang-buddies/api_hub_common/apispecdoc"
-	"github.com/rog-golang-buddies/dto"
-	"github.com/rog-golang-buddies/internal/config"
-	"github.com/rog-golang-buddies/internal/logger"
-	"github.com/rog-golang-buddies/internal/process"
-	"github.com/rog-golang-buddies/internal/queue/publisher"
 	"github.com/wagslane/go-rabbitmq"
 )
 
 type ApiSpecDocHandler struct {
 	publisher publisher.Publisher
 	config    config.QueueConfig
-	processor process.UrlProcessor
 	log       logger.Logger
 }
 
@@ -55,7 +53,7 @@ func (asdh *ApiSpecDocHandler) Handle(ctx context.Context, delivery rabbitmq.Del
 
 	//publish to the required queue success or error
 	result := dto.ScrapingResult{IsNotifyUser: req.IsNotifyUser, ApiSpecDoc: req.ApiSpecDoc}
-	err = asdh.publish(&delivery, result, asdh.config.ScrapingResultQueue)
+	err = asdh.publish(&delivery, result, asdh.config.SaveASDRequestQueue)
 	if err != nil {
 		asdh.log.Error("error while publishing: ", err)
 		//Here is some error while publishing happened - probably something wrong with the queue
@@ -88,12 +86,10 @@ func (asdh *ApiSpecDocHandler) publish(delivery *rabbitmq.Delivery, message any,
 
 func NewApiSpecDocHandler(publisher publisher.Publisher,
 	config config.QueueConfig,
-	processor process.UrlProcessor,
 	log logger.Logger) Handler {
 	return &ApiSpecDocHandler{
 		publisher: publisher,
 		config:    config,
-		processor: processor,
 		log:       log,
 	}
 }

@@ -3,8 +3,8 @@ package publisher
 import (
 	"io"
 
-	"github.com/rog-golang-buddies/internal/config"
-	"github.com/rog-golang-buddies/internal/logger"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/wagslane/go-rabbitmq"
 )
 

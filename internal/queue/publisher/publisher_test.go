@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	mock_logger "github.com/rog-golang-buddies/internal/logger/mocks"
-	publisher "github.com/rog-golang-buddies/queue/publisher/mocks"
+	mock_logger "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger/mocks"
+	publisher "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/publisher/mocks"
 )
 
 func TestClosePublisher(t *testing.T) {

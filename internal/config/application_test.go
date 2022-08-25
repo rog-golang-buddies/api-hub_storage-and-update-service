@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestReadConfig(t *testing.T) {
@@ -30,8 +31,7 @@ func TestReadConfig(t *testing.T) {
 
 	conf, err := ReadConfig()
 	assert.Nil(t, err)
-	assert.Equal(t, expUrlRequestQueue, conf.Queue.UrlRequestQueue)
-	assert.Equal(t, expScrResQueue, conf.Queue.ScrapingResultQueue)
+	assert.Equal(t, expScrResQueue, conf.Queue.SaveASDRequestQueue)
 	assert.Equal(t, expNotificationQueue, conf.Queue.NotificationQueue)
 	assert.Equal(t, expQueueUrl, conf.Queue.Url)
 	assert.Equal(t, expQueueConcurrency, conf.Queue.Concurrency)

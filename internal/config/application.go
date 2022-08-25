@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -9,7 +10,6 @@ type ApplicationConfig struct {
 	Env    Environment `default:"dev"`
 	Logger LoggerConfig
 	Queue  QueueConfig
-	Web    Web
 }
 
 // ReadConfig reads configuration from the environment and populates the structure with it

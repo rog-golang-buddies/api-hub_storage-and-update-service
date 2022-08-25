@@ -3,7 +3,7 @@ package logger
 import (
 	"testing"
 
-	"github.com/rog-golang-buddies/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zapcore"
 )
