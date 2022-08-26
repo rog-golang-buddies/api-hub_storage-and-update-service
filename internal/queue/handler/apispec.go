@@ -20,9 +20,9 @@ type ApiSpecDocHandler struct {
 
 func (asdh *ApiSpecDocHandler) Handle(ctx context.Context, delivery rabbitmq.Delivery) rabbitmq.Action {
 	asdh.log.Infof("consumed: %v", string(delivery.Body))
-	//call process here
+	//get link to API from queue and unmarshal json response to req
 	var req dto.ScrapingResult
-	err := json.Unmarshal(delivery.Body, &req) // general change here
+	err := json.Unmarshal(delivery.Body, &req)
 	if err != nil {
 		asdh.log.Errorf("error unmarshalling message: '%v', err: %s", string(delivery.Body), err)
 		if req.IsNotifyUser {
@@ -36,29 +36,6 @@ func (asdh *ApiSpecDocHandler) Handle(ctx context.Context, delivery rabbitmq.Del
 		return rabbitmq.NackDiscard
 	}
 
-	//here processing of the request happens...
-
-	// asd, err := asdh.processor.Process(ctx, req.FileUrl)
-	// if err != nil {
-	// 	asdh.log.Error("error while processing url: ", err)
-	// 	if req.IsNotifyUser {
-	// 		procErr := dto.NewProcessingError("error while processing url", err.Error())
-	// 		err = asdh.publish(&delivery, dto.NewUserNotification(&procErr), asdh.config.NotificationQueue)
-	// 		if err != nil {
-	// 			asdh.log.Error("error while notifying user")
-	// 		}
-	// 	}
-	// 	return rabbitmq.NackDiscard
-	// }
-
-	//publish to the required queue success or error
-	result := dto.ScrapingResult{IsNotifyUser: req.IsNotifyUser, ApiSpecDoc: req.ApiSpecDoc}
-	err = asdh.publish(&delivery, result, asdh.config.SaveASDRequestQueue)
-	if err != nil {
-		asdh.log.Error("error while publishing: ", err)
-		//Here is some error while publishing happened - probably something wrong with the queue
-		return rabbitmq.NackDiscard
-	}
 	if req.IsNotifyUser {
 		err = asdh.publish(&delivery, dto.NewUserNotification(nil), asdh.config.NotificationQueue)
 		if err != nil {
