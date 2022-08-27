@@ -13,7 +13,7 @@ func TestReadConfig(t *testing.T) {
 	err := os.Setenv("QUEUE_URL_REQUEST_QUEUE", expUrlRequestQueue)
 	assert.Nil(t, err)
 
-	expScrResQueue := "scraping_res_queue"
+	expScrResQueue := "storage-update-asd"
 	err = os.Setenv("QUEUE_SCRAPING_RESULT_QUEUE", expScrResQueue)
 	assert.Nil(t, err)
 
