@@ -13,8 +13,8 @@ func TestReadConfig(t *testing.T) {
 	err := os.Setenv("QUEUE_URL_REQUEST_QUEUE", expUrlRequestQueue)
 	assert.Nil(t, err)
 
-	expScrResQueue := "storage-update-asd"
-	err = os.Setenv("QUEUE_SCRAPING_RESULT_QUEUE", expScrResQueue)
+	expSaveASDReqQueue := "test_save_from_queue"
+	err = os.Setenv("QUEUE_SAVE_ASD_REQUEST_QUEUE", expSaveASDReqQueue)
 	assert.Nil(t, err)
 
 	expNotificationQueue := "test_notifications"
@@ -31,7 +31,7 @@ func TestReadConfig(t *testing.T) {
 
 	conf, err := ReadConfig()
 	assert.Nil(t, err)
-	assert.Equal(t, expScrResQueue, conf.Queue.SaveASDRequestQueue)
+	assert.Equal(t, expSaveASDReqQueue, conf.Queue.SaveASDRequestQueue)
 	assert.Equal(t, expNotificationQueue, conf.Queue.NotificationQueue)
 	assert.Equal(t, expQueueUrl, conf.Queue.Url)
 	assert.Equal(t, expQueueConcurrency, conf.Queue.Concurrency)
