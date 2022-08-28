@@ -3,8 +3,8 @@ package internal
 import (
 	"context"
 	"fmt"
-
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/grpc"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/handler"
@@ -51,7 +51,16 @@ func Start() int {
 		return 1
 	}
 
-	<-ctx.Done()
+	//creating grpc server
+	lst, err := grpc.NewGRPCListener(&conf.GRPC)
+	if err != nil {
+		log.Error("error creating grpc listener: ", err)
+		return 1
+	}
+	asdSrv := grpc.NewASDServer(log)
+	errCh := grpc.StartServer(ctx, log, asdSrv, lst)
+
+	<-errCh
 
 	log.Info("application stopped gracefully (not)")
 	return 0
