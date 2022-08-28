@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -19,6 +17,5 @@ func ReadConfig() (*ApplicationConfig, error) {
 	if err := envconfig.Process("", &conf); err != nil {
 		return nil, err
 	}
-	fmt.Printf("conf: %+v\n", conf)
 	return &conf, nil
 }
