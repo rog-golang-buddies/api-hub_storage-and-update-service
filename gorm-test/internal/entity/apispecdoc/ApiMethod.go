@@ -1,15 +1,13 @@
 package apispecdoc
 
-import (
-	"gorm.io/gorm"
-)
-
 type ApiMethod struct {
-	gorm.Model
-	Path         string
-	Name         string
-	Description  string
-	Type         string
-	ApiSpecDocID *ApiSpecDocEntity
-	GroupID      *Group
+	ID               int `gorm:"primaryKey"`
+	Path             string
+	Name             string
+	Description      string
+	Type             string
+	ApiSpecDocID     uint
+	ApiSpecDocEntity ApiSpecDocEntity
+	GroupID          uint
+	Group            Group
 }
