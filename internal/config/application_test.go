@@ -29,10 +29,20 @@ func TestReadConfig(t *testing.T) {
 	err = os.Setenv("QUEUE_CONCURRENCY", strconv.Itoa(expQueueConcurrency))
 	assert.Nil(t, err)
 
+	expGRPCHost := "test gRPC host"
+	err = os.Setenv("GRPC_HOST", expGRPCHost)
+	assert.Nil(t, err)
+
+	expGRPCPort := "test gRPC port"
+	err = os.Setenv("GRPC_PORT", expGRPCPort)
+	assert.Nil(t, err)
+
 	conf, err := ReadConfig()
 	assert.Nil(t, err)
 	assert.Equal(t, expSaveASDReqQueue, conf.Queue.SaveASDRequestQueue)
 	assert.Equal(t, expNotificationQueue, conf.Queue.NotificationQueue)
 	assert.Equal(t, expQueueUrl, conf.Queue.Url)
 	assert.Equal(t, expQueueConcurrency, conf.Queue.Concurrency)
+	assert.Equal(t, expGRPCHost, conf.GRPC.Host)
+	assert.Equal(t, expGRPCPort, conf.GRPC.Port)
 }
