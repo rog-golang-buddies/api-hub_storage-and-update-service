@@ -1,15 +1,11 @@
 package apispecdoc
 
-import (
-	"gorm.io/gorm"
-)
-
 type Parameter struct {
-	gorm.Model
+	ID          int `gorm:"primaryKey"`
 	Name        string
 	In          string
 	Description string
-	SchemaID    []Schema
 	Required    bool
-	ApiMethodID []ApiMethod
+	ApiMethodID uint
+	SchemaID    uint
 }

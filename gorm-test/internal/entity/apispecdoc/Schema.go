@@ -1,13 +1,11 @@
 package apispecdoc
 
-import (
-	"gorm.io/gorm"
-)
-
 type Schema struct {
-	gorm.Model
-	Key         string
-	Type        string
-	Description string
-	ParentID    *Schema
+	ID               int `gorm:"primaryKey"`
+	Key              string
+	Type             string
+	Description      string
+	ParentID         *Schema
+	Parameters       []Parameter
+	MediaTypeObjects []MediaTypeObject
 }

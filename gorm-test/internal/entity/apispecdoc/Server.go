@@ -1,12 +1,8 @@
 package apispecdoc
 
-import (
-	"gorm.io/gorm"
-)
-
 type Server struct {
-	gorm.Model
+	ID          int `gorm:"primaryKey"`
 	URL         string
 	Description string
-	ApiMethodID []ApiMethod
+	ApiMethodID uint
 }

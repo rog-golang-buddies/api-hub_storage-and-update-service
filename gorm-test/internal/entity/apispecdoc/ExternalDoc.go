@@ -1,10 +1,8 @@
 package apispecdoc
 
-import "gorm.io/gorm"
-
 type ExternalDoc struct {
-	gorm.Model
+	ID          int `gorm:"primaryKey"`
 	Description string
 	URL         string
-	ApiMethodID ApiMethod
+	ApiMethodID uint
 }

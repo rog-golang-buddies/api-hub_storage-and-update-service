@@ -1,11 +1,7 @@
 package apispecdoc
 
-import (
-	"gorm.io/gorm"
-)
-
 type MediaTypeObject struct {
-	gorm.Model
-	RequestBodyID []RequestBody
-	SchemaID      []Schema
+	ID            int `gorm:"primaryKey"`
+	RequestBodyID uint
+	SchemaID      uint
 }

@@ -7,12 +7,12 @@ import (
 )
 
 type ApiSpecDocEntity struct {
-	// ApiSpecDocEntity has many groups, ApiSpecDocEntityID is the foreign key
 	gorm.Model
 	Title       string
 	Description string
 	Type        int
 	Groups      []Group
+	ApiMethods  []ApiMethod
 	Md5sum      string
 	FetchedAt   time.Time
 }

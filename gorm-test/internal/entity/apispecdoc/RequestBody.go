@@ -1,12 +1,9 @@
 package apispecdoc
 
-import (
-	"gorm.io/gorm"
-)
-
 type RequestBody struct {
-	gorm.Model
-	Description string
-	Required    bool
-	ApiMethodID ApiMethod
+	ID               int `gorm:"primaryKey"`
+	Description      string
+	Required         bool
+	MediaTypeObjects []MediaTypeObject
+	ApiMethodID      uint
 }

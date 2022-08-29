@@ -5,4 +5,5 @@ type Group struct {
 	Name               string
 	Description        string
 	ApiSpecDocEntityID uint
+	ApiMethods         []ApiMethod
 }
