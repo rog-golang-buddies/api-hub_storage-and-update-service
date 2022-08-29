@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/db"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/grpc"
 	"gorm.io/gorm"
 
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
@@ -63,7 +64,16 @@ func Start() int {
 		return 1
 	}
 
-	<-ctx.Done()
+	//creating grpc server
+	lst, err := grpc.NewGRPCListener(&conf.GRPC)
+	if err != nil {
+		log.Error("error creating grpc listener: ", err)
+		return 1
+	}
+	asdSrv := grpc.NewASDServer(log)
+	errCh := grpc.StartServer(ctx, log, asdSrv, lst)
+
+	<-errCh
 
 	log.Info("application stopped gracefully (not)")
 	return 0
