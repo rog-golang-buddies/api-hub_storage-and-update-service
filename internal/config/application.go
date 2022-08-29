@@ -10,6 +10,7 @@ type ApplicationConfig struct {
 	Env    Environment `default:"dev"`
 	Logger LoggerConfig
 	Queue  QueueConfig
+	DB     DbConfig
 }
 
 // ReadConfig reads configuration from the environment and populates the structure with it
