@@ -47,7 +47,8 @@ services:
       - storage-and-update-db
 
   storage-and-update-db:
-    image: postgres
+    container_name: sus_db
+    image: postgres:14.5
     environment:
       POSTGRES_PASSWORD: yZuSkkrd
       POSTGRES_USER: tst_user

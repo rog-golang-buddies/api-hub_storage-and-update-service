@@ -7,6 +7,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.10.2
+	github.com/pkg/errors v0.9.1
 	github.com/rog-golang-buddies/api_hub_common v0.1.0
 	github.com/stretchr/testify v1.8.0
 	github.com/testcontainers/testcontainers-go v0.13.0
@@ -53,7 +54,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rabbitmq/amqp091-go v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
