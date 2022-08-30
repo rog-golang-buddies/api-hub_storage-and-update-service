@@ -8,10 +8,14 @@ import (
 	"os"
 )
 
+// PostgresContainer represents a structure with functionality to start and stop the testcontainer with Postgres DB.
+// At the start, it populates environment settings with the DB parameters and you can just 'ReadConfig' to retrieve them.
+// It is supposed to use in the TestMain function - to start the container before tests and stop after.
 type PostgresContainer struct {
 	container testcontainers.Container
 }
 
+// Start starts container and populates db environment variables.
 func (pc *PostgresContainer) Start(ctx context.Context) error {
 	pgUser := "test_pg_user"
 	pgPasswd := "test_pg_password"
