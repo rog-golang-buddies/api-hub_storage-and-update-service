@@ -2,7 +2,9 @@ package db
 
 import (
 	"context"
+	"github.com/golang/mock/gomock"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	mock_logger "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger/mocks"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/test/docker"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -26,7 +28,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestConnectToDb(t *testing.T) {
-	conf, err := config.ReadConfig() //read configuration from env
+	conf, err := config.ReadConfig()
 	if err != nil {
 		t.Error("error while reading configuration")
 	}
@@ -38,11 +40,14 @@ func TestConnectToDb(t *testing.T) {
 }
 
 func TestConnectAndMigrate(t *testing.T) {
-	conf, err := config.ReadConfig() //read configuration from env
+	conf, err := config.ReadConfig()
 	if err != nil {
 		t.Error("error while reading configuration")
 	}
-	gormDb, err := ConnectAndMigrate(&conf.DB)
+	ctrl := gomock.NewController(t)
+	logger := mock_logger.NewMockLogger(ctrl)
+	logger.EXPECT().Info(gomock.Any()).AnyTimes()
+	gormDb, err := ConnectAndMigrate(logger, &conf.DB)
 	assert.Nil(t, err)
 	assert.NotNil(t, gormDb)
 }

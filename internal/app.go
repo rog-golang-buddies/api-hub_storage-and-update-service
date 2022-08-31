@@ -26,7 +26,7 @@ func Start() int {
 		fmt.Println("error creating logger: ", err)
 		return 1
 	}
-	_, err = db.ConnectAndMigrate(&conf.DB)
+	_, err = db.ConnectAndMigrate(log, &conf.DB)
 	if err != nil {
 		log.Error("error while db setup: ", err)
 		return 1

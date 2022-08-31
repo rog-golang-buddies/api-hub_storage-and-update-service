@@ -10,6 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "github.com/lib/pq"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"gorm.io/gorm"
 )
 
@@ -33,11 +34,12 @@ func Migrate(db *sql.DB, fsDriver source.Driver, conf *config.DbConfig) error {
 	return nil
 }
 
-func ConnectAndMigrate(conf *config.DbConfig) (*gorm.DB, error) {
+func ConnectAndMigrate(log logger.Logger, conf *config.DbConfig) (*gorm.DB, error) {
 	gormDb, err := Connect(conf)
 	if err != nil {
 		return nil, err
 	}
+	log.Info("connected to db")
 	sqlDb, err := gormDb.DB()
 	if err != nil {
 		return nil, err
@@ -50,5 +52,6 @@ func ConnectAndMigrate(conf *config.DbConfig) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Info("migrations passed")
 	return gormDb, nil
 }
