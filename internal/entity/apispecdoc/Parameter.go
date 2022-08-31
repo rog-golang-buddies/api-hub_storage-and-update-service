@@ -8,4 +8,5 @@ type Parameter struct {
 	Required    bool
 	ApiMethodID uint
 	SchemaID    uint
+	Schema      Schema
 }

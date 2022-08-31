@@ -12,7 +12,7 @@ type ApiSpecDocEntity struct {
 	Description string
 	Type        int
 	Groups      []Group
-	ApiMethods  []ApiMethod
+	ApiMethods  []ApiMethodEntity
 	Md5sum      string
 	FetchedAt   time.Time
 }
