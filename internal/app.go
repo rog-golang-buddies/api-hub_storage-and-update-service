@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/db"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/grpc"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue"
@@ -23,6 +24,11 @@ func Start() int {
 	log, err := logger.NewLogger(conf)
 	if err != nil {
 		fmt.Println("error creating logger: ", err)
+		return 1
+	}
+	_, err = db.ConnectAndMigrate(log, &conf.DB)
+	if err != nil {
+		log.Error("error while db setup: ", err)
 		return 1
 	}
 

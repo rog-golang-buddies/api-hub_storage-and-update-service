@@ -9,6 +9,7 @@ type ApplicationConfig struct {
 	Logger LoggerConfig
 	Queue  QueueConfig
 	GRPC   GRPCConfig
+	DB     DbConfig
 }
 
 // ReadConfig reads configuration from the environment and populates the structure with it

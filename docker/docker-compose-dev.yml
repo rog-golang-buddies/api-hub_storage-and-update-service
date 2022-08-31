@@ -3,6 +3,8 @@ version: '3.9'
 volumes:
   rabbit-data:
     driver: local
+  postgres-data:
+    driver: local
 
 services:
   rabbit:
@@ -35,6 +37,23 @@ services:
       dockerfile: Dockerfile
     environment:
       QUEUE_URL: amqp://guest:guest@rabbit:5672/
+      DB_USER: tst_user
+      DB_PASSWORD: yZuSkkrd
+      DB_HOST: storage-and-update-db
+      DB_NAME: storage-and-update
     restart: unless-stopped
     depends_on:
       - rabbit
+      - storage-and-update-db
+
+  storage-and-update-db:
+    container_name: sus_db
+    image: postgres:14.5
+    environment:
+      POSTGRES_PASSWORD: yZuSkkrd
+      POSTGRES_USER: tst_user
+      POSTGRES_DB: storage-and-update
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
