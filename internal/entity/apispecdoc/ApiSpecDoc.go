@@ -10,9 +10,9 @@ type ApiSpecDocEntity struct {
 	gorm.Model
 	Title       string
 	Description string
-	Type        int
-	Groups      []Group
-	ApiMethods  []ApiMethodEntity
+	Type        string
+	Groups      []*GroupEntity
+	ApiMethods  []*ApiMethodEntity
 	Md5sum      string
 	FetchedAt   time.Time
 }
