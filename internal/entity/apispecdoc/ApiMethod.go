@@ -6,10 +6,10 @@ type ApiMethodEntity struct {
 	Name         string
 	Description  string
 	Type         string
-	Parameters   []Parameter
-	Servers      []Server
-	RequestBody  RequestBody
-	ExternalDoc  ExternalDoc
+	Parameters   string
+	Servers      []*ServerEntity
+	RequestBody  string
+	ExternalDoc  *ExternalDocEntity
 	GroupID      uint
 	ApiSpecDocID uint
 }

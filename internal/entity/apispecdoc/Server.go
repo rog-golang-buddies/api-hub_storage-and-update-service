@@ -1,6 +1,6 @@
 package apispecdoc
 
-type Server struct {
+type ServerEntity struct {
 	ID          int `gorm:"primaryKey"`
 	URL         string
 	Description string

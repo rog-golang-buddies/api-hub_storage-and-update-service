@@ -1,6 +1,6 @@
 package apispecdoc
 
-type ExternalDoc struct {
+type ExternalDocEntity struct {
 	ID          int `gorm:"primaryKey"`
 	Description string
 	URL         string
