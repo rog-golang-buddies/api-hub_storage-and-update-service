@@ -2,21 +2,15 @@ package internal
 
 import (
 	"context"
-	"embed"
 	"fmt"
-	"github.com/golang-migrate/migrate/v4/source/iofs"
-	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/db"
-	"gorm.io/gorm"
-
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/db"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/grpc"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/handler"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/publisher"
 )
-
-//go:embed resources/db/migrations/*.sql
-var fs embed.FS
 
 func Start() int {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -32,7 +26,7 @@ func Start() int {
 		fmt.Println("error creating logger: ", err)
 		return 1
 	}
-	_, err = connectToDB(&conf.DB)
+	_, err = db.ConnectAndMigrate(log, &conf.DB)
 	if err != nil {
 		log.Error("error while db setup: ", err)
 		return 1
@@ -63,28 +57,17 @@ func Start() int {
 		return 1
 	}
 
-	<-ctx.Done()
+	//creating grpc server
+	lst, err := grpc.NewGRPCListener(&conf.GRPC)
+	if err != nil {
+		log.Error("error creating grpc listener: ", err)
+		return 1
+	}
+	asdSrv := grpc.NewASDServer(log)
+	errCh := grpc.StartServer(ctx, log, asdSrv, lst)
+
+	<-errCh
 
 	log.Info("application stopped gracefully (not)")
 	return 0
-}
-
-func connectToDB(conf *config.DbConfig) (*gorm.DB, error) {
-	gormDb, err := db.Connect(conf)
-	if err != nil {
-		return nil, err
-	}
-	sqlDb, err := gormDb.DB()
-	if err != nil {
-		return nil, err
-	}
-	fsDriver, err := iofs.New(fs, "resources/db/migrations")
-	if err != nil {
-		return nil, err
-	}
-	err = db.MigrateDb(sqlDb, fsDriver, conf)
-	if err != nil {
-		return nil, err
-	}
-	return gormDb, nil
 }
