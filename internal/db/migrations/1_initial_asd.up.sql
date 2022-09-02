@@ -14,7 +14,7 @@ create table groups (
     id serial primary key,
     name text,
     description text,
-    api_spec_docs_id int references api_spec_docs(id) on delete cascade on update cascade
+    api_spec_doc_id int references api_spec_docs(id) on delete cascade on update cascade
 );
 
 create table api_methods (
@@ -25,20 +25,20 @@ create table api_methods (
   type text,
   parameters text,
   request_body text,
-  api_spec_docs_id int references api_spec_docs(id) on delete cascade on update cascade,
-  groups_id int references groups(id) on delete cascade on update cascade
+  api_spec_doc_id int references api_spec_docs(id) on delete cascade on update cascade,
+  group_id int references groups(id) on delete cascade on update cascade
 );
 
 create table external_docs (
     id serial primary key,
     description text,
     url text,
-    api_methods_id int unique references api_methods(id) on delete cascade on update cascade
+    api_method_id int unique references api_methods(id) on delete cascade on update cascade
 );
 
 create table servers (
     id serial primary key,
     url text,
     description text,
-    api_methods_id int references api_methods(id) on delete cascade on update cascade
+    api_method_id int references api_methods(id) on delete cascade on update cascade
 );

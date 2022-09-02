@@ -11,8 +11,8 @@ type ApiSpecDocEntity struct {
 	Title       string
 	Description string
 	Type        string
-	Groups      []*GroupEntity     `gorm:"foreignKey:ApiSpecDocsID"`
-	ApiMethods  []*ApiMethodEntity `gorm:"foreignKey:ApiSpecDocsID"`
+	Groups      []*GroupEntity     `gorm:"foreignKey:ApiSpecDocID"`
+	ApiMethods  []*ApiMethodEntity `gorm:"foreignKey:ApiSpecDocID"`
 	Md5sum      string
 	FetchedAt   time.Time
 }

@@ -1,10 +1,10 @@
 package apispecdoc
 
 type ExternalDocEntity struct {
-	ID           int `gorm:"primaryKey"`
-	Description  string
-	URL          string
-	ApiMethodsID uint
+	ID          int `gorm:"primaryKey"`
+	Description string
+	URL         string
+	ApiMethodID uint
 }
 
 func (ExternalDocEntity) TableName() string {
