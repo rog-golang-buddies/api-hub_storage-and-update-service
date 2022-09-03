@@ -1,19 +1,15 @@
 package apispecdoc
 
-type ApiMethodEntity struct {
+type ApiMethod struct {
 	ID           int `gorm:"primaryKey"`
 	Path         string
 	Name         string
 	Description  string
 	Type         string
 	Parameters   string
-	Servers      []*ServerEntity `gorm:"foreignKey:ApiMethodID"`
+	Servers      []*Server
 	RequestBody  string
-	ExternalDoc  *ExternalDocEntity `gorm:"foreignKey:ApiMethodID"`
-	GroupID      uint
-	ApiSpecDocID uint
-}
-
-func (ApiMethodEntity) TableName() string {
-	return "api_methods"
+	ExternalDoc  *ExternalDoc
+	GroupID      *uint
+	ApiSpecDocID *uint
 }

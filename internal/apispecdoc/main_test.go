@@ -35,6 +35,9 @@ func TestMain(m *testing.M) {
 
 func applyMigrations() (*gorm.DB, error) {
 	conf, err := config.ReadConfig()
+	if err != nil {
+		return nil, err
+	}
 	gormDb, err := db.Connect(&conf.DB)
 	if err != nil {
 		return nil, err
