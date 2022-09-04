@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/golang/mock/gomock"
+	mock_apispecdoc "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc/mocks"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	mock_logger "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger/mocks"
 	"github.com/stretchr/testify/assert"
@@ -14,8 +15,9 @@ import (
 func TestServerStartsAndStops(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	log := mock_logger.NewMockLogger(ctrl)
+	asdService := mock_apispecdoc.NewMockService(ctrl)
 
-	server := NewASDServer(log)
+	server := NewASDServer(log, asdService)
 	assert.NotNil(t, server)
 
 	conf, err := config.ReadConfig()
@@ -53,8 +55,9 @@ func TestServerStopsOnContextCancel(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	log := mock_logger.NewMockLogger(ctrl)
 	log.EXPECT().Info("context done, stopping grpc server...")
+	asdService := mock_apispecdoc.NewMockService(ctrl)
 
-	server := NewASDServer(log)
+	server := NewASDServer(log, asdService)
 	assert.NotNil(t, server)
 
 	conf, err := config.ReadConfig()

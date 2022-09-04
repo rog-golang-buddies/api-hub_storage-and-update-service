@@ -4,7 +4,7 @@ create table api_spec_docs
     title       text,
     description text,
     type        text,
-    md5sum      text,
+    md5sum      text unique,
     created_at  timestamp with time zone,
     updated_at  timestamp with time zone,
     deleted_at  timestamp with time zone,
