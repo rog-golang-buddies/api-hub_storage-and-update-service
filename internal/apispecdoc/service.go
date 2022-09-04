@@ -17,13 +17,13 @@ type Service interface {
 	Save(context.Context, *apispecdoc.ApiSpecDoc) (uint, error)
 }
 
-func NewService(log logger.Logger, repo Repository) Service {
-	return &ServiceImpl{log: log, repo: repo}
+func NewService(log logger.Logger, repo AsdRepository) Service {
+	return &ServiceImpl{log: log, asdRepo: repo}
 }
 
 type ServiceImpl struct {
-	log  logger.Logger
-	repo Repository
+	log     logger.Logger
+	asdRepo AsdRepository
 }
 
 func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchRequest) (*apispecproto.SearchResponse, error) {
@@ -35,7 +35,6 @@ func (s *ServiceImpl) Get(ctx context.Context, req *apispecproto.GetRequest) (*a
 }
 
 func (s *ServiceImpl) Save(ctx context.Context, asd *apispecdoc.ApiSpecDoc) (uint, error) {
-	//TODO validate md5 sum
 	if asd == nil {
 		return 0, errors.New("nil asd model received")
 	}
@@ -43,7 +42,26 @@ func (s *ServiceImpl) Save(ctx context.Context, asd *apispecdoc.ApiSpecDoc) (uin
 	if err != nil {
 		return 0, err
 	}
-	return s.repo.Save(ctx, asdEntity)
+	asdByHash, err := s.asdRepo.FindByHash(ctx, asd.Md5Sum)
+	if err != nil {
+		return 0, err
+	}
+	if asdByHash != nil {
+		s.log.Info("record '%s' hash '%s' no changes")
+		return asdByHash.ID, nil
+	}
+	//TODO validate and update by original url
+	//if asdByHash != nil {
+	//	//clear and reattach all dependencies
+	//	err = s.asdRepo.Update(ctx, asdByHash, asdEntity)
+	//	if err != nil {
+	//		return 0, err
+	//	}
+	//	s.log.Infof("record '%s' with hash '%s' updated", asd.Title, asd.Md5Sum)
+	//	return asdByHash.ID, nil
+	//}
+	s.log.Infof("create new record for '%s' hash '%s'", asd.Title, asd.Md5Sum)
+	return s.asdRepo.Save(ctx, asdEntity)
 }
 
 func asdToEntity(dto *apispecdoc.ApiSpecDoc) (*ApiSpecDoc, error) {

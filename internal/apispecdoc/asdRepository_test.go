@@ -20,7 +20,7 @@ func TestSave(t *testing.T) {
 		Groups:      groups,
 		ApiMethods:  apiMeth,
 	}
-	rep := RepositoryImpl{db: gDb}
+	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	assert.False(t, id == 0)
 	assert.Nil(t, err)
@@ -33,7 +33,7 @@ func TestSaveErrorOnMultipleApiMethodRelations(t *testing.T) {
 	apiMethods := []*ApiMethod{meth}
 	groups := []*Group{{Name: "test group", Description: "test description", ApiMethods: apiMethodsG}}
 	asd := ApiSpecDoc{Title: "test ASD", Groups: groups, ApiMethods: apiMethods}
-	rep := RepositoryImpl{db: gDb}
+	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &asd)
 	assert.NotNil(t, err)
 	assert.True(t, id == 0)

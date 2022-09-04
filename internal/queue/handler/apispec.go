@@ -62,7 +62,7 @@ func (asdh *ApiSpecDocHandler) Handle(ctx context.Context, delivery rabbitmq.Del
 	if req.IsNotifyUser {
 		asdh.notifyUser(&delivery, nil)
 	}
-	asdh.log.Info("API specification document saved successfully")
+	asdh.log.Info("API specification document saved/updated successfully")
 	return rabbitmq.Ack
 }
 

@@ -32,7 +32,7 @@ func Start() int {
 		log.Error("error while db setup: ", err)
 		return 1
 	}
-	asdRepo := apispecdoc.NewRepository(DB)
+	asdRepo := apispecdoc.NewASDRepository(DB)
 	asdServ := apispecdoc.NewService(log, asdRepo)
 
 	//initialize publisher connection to the queue
