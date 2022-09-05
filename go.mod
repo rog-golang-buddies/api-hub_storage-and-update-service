@@ -6,7 +6,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golang/mock v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/lib/pq v1.10.2
+	github.com/lib/pq v1.10.6
 	github.com/pkg/errors v0.9.1
 	github.com/rog-golang-buddies/api_hub_common v0.1.0
 	github.com/stretchr/testify v1.8.0
