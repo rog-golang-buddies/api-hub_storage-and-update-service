@@ -2,8 +2,10 @@ package apispecdoc
 
 import (
 	"context"
-	"errors"
+	"fmt"
+
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
@@ -18,20 +20,46 @@ type RepositoryImpl struct {
 }
 
 func (r *RepositoryImpl) Save(ctx context.Context, asd *ApiSpecDoc) error {
-	result := r.db.WithContext(ctx).Create(&asd)
+	result := r.db.Debug().WithContext(ctx).Create(&asd)
 	return result.Error
 }
 
-func (*RepositoryImpl) Delete(ctx context.Context, asd *ApiSpecDoc) error {
-	return errors.New("not implemented")
+func (r *RepositoryImpl) Delete(ctx context.Context, asd *ApiSpecDoc) error {
+	result := r.db.Debug().WithContext(ctx).Delete(&asd)
+	return result.Error
 }
 
-func (*RepositoryImpl) FindById(ctx context.Context, id uint) (*ApiSpecDoc, error) {
-	return nil, errors.New("not implemented")
+func (r *RepositoryImpl) FindById(ctx context.Context, id uint) (*ApiSpecDoc, error) {
+	var specDocs []*ApiSpecDoc
+	//err := r.db.Debug().WithContext(ctx).Where("id = ?", id).Preload("ApiSpecDoc").Preload("ApiMethods").Preload("ExternalDoc").Preload("Groups").Find(&specDocs).Error
+	err := r.db.Debug().WithContext(ctx).Where("id = ?", id).Preload(clause.Associations).Find(&specDocs).Error
+	if err != nil {
+		return nil, err
+	}
+	switch len(specDocs) {
+	case 0:
+		return nil, nil
+	case 1:
+		return specDocs[0], nil
+	default:
+		return nil, fmt.Errorf("incorrect number of results, retrieved: %d", len(specDocs))
+	}
 }
 
-func (*RepositoryImpl) SearchShort(ctx context.Context, search string) ([]*ApiSpecDoc, error) {
-	return nil, errors.New("not implemented")
+func (r *RepositoryImpl) SearchShort(ctx context.Context, search string) ([]*ApiSpecDoc, error) {
+	var specDocs []*ApiSpecDoc
+	err := r.db.WithContext(ctx).Where("title LIKE ?", "%"+search+"%").Find(&specDocs).Error
+	if err != nil {
+		return nil, err
+	}
+	switch len(specDocs) {
+	case 0:
+		return nil, nil
+	case 1:
+		return specDocs, nil
+	default:
+		return nil, fmt.Errorf("incorrect number of results, retrieved: %d", len(specDocs))
+	}
 }
 
 func NewASDRepository(db *gorm.DB) Repository {
