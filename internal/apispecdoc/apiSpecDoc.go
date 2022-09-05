@@ -14,5 +14,6 @@ type ApiSpecDoc struct {
 	Groups      []*Group
 	ApiMethods  []*ApiMethod
 	Md5sum      string
+	Url         string
 	FetchedAt   time.Time
 }

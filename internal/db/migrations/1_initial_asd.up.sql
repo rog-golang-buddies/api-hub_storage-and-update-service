@@ -5,6 +5,7 @@ create table api_spec_docs
     description text,
     type        text,
     md5sum      text unique,
+    url         text unique,
     created_at  timestamp with time zone,
     updated_at  timestamp with time zone,
     deleted_at  timestamp with time zone,

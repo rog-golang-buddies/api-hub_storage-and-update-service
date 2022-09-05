@@ -17,6 +17,7 @@ func TestSave(t *testing.T) {
 		Description: "API for Trello",
 		Type:        "1",
 		Md5sum:      "d1092341234",
+		Url:         "test_url",
 		Groups:      groups,
 		ApiMethods:  apiMeth,
 	}

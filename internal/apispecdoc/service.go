@@ -42,24 +42,36 @@ func (s *ServiceImpl) Save(ctx context.Context, asd *apispecdoc.ApiSpecDoc) (uin
 	if err != nil {
 		return 0, err
 	}
+	//Check records by md5 hash sum - if exists than all methods the same and update not required
 	asdByHash, err := s.asdRepo.FindByHash(ctx, asd.Md5Sum)
 	if err != nil {
 		return 0, err
 	}
 	if asdByHash != nil {
-		s.log.Info("record '%s' hash '%s' no changes")
+		s.log.Infof("record '%s' hash '%s' no changes", asd.Title, asd.Md5Sum)
 		return asdByHash.ID, nil
 	}
-	//TODO validate and update by original url
-	//if asdByHash != nil {
-	//	//clear and reattach all dependencies
-	//	err = s.asdRepo.Update(ctx, asdByHash, asdEntity)
-	//	if err != nil {
-	//		return 0, err
-	//	}
-	//	s.log.Infof("record '%s' with hash '%s' updated", asd.Title, asd.Md5Sum)
-	//	return asdByHash.ID, nil
-	//}
+	//Check records by file url - if exists than need to update ASD in db (prev step didn't find matched hash - so hash changed)
+	asdByUrl, err := s.asdRepo.FindByUrl(ctx, asd.Url)
+	if err != nil {
+		return 0, err
+	}
+	if asdByUrl != nil {
+		asdByUrl.Title = asdEntity.Title
+		asdByUrl.Description = asdEntity.Description
+		asdByUrl.Type = asdEntity.Type
+		asdByUrl.Groups = asdEntity.Groups
+		asdByUrl.ApiMethods = asdEntity.ApiMethods
+		asdByUrl.Md5sum = asdEntity.Md5sum
+		asdByUrl.Url = asdEntity.Url
+		//clear and reattach all dependencies
+		err = s.asdRepo.Update(ctx, asdByUrl)
+		if err != nil {
+			return 0, err
+		}
+		s.log.Infof("record '%s' with hash '%s' updated", asd.Title, asd.Md5Sum)
+		return asdByUrl.ID, nil
+	}
 	s.log.Infof("create new record for '%s' hash '%s'", asd.Title, asd.Md5Sum)
 	return s.asdRepo.Save(ctx, asdEntity)
 }
@@ -88,6 +100,7 @@ func asdToEntity(dto *apispecdoc.ApiSpecDoc) (*ApiSpecDoc, error) {
 		Groups:      groups,
 		ApiMethods:  methods,
 		Md5sum:      dto.Md5Sum,
+		Url:         dto.Url,
 		FetchedAt:   time.Now(),
 	}, nil
 }
