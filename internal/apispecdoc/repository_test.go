@@ -55,14 +55,14 @@ func TestDelete(t *testing.T) {
 	rep := RepositoryImpl{db: gDb}
 	err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	result, err := rep.FindById(context.Background(), 1)
+	result, err := rep.FindById(context.Background(), entity.ID)
 	if err != nil {
 		t.Error(err)
 	}
 	assert.NotNil(t, result)
 	err = rep.Delete(context.Background(), &entity)
 	assert.Nil(t, err)
-	result, err = rep.FindById(context.Background(), 1)
+	result, err = rep.FindById(context.Background(), entity.ID)
 	if err != nil {
 		t.Error(err)
 	}
@@ -103,12 +103,12 @@ func TestFindById(t *testing.T) {
 	}
 	err = rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	result, _ := rep.FindById(context.Background(), 2)
+	result, _ := rep.FindById(context.Background(), entity.ID)
 	assert.NotNil(t, result)
 }
 
 func TestSearchShort(t *testing.T) {
-	servG := []*Server{{URL: "test google url", Description: "test description Google"}}
+	servG := []*Server{{URL: "google.com", Description: "test description Google"}}
 	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
 	groups := []*Group{{Name: "test google", ApiMethods: apiMethG}}
 	servs := []*Server{{URL: "test servG", Description: "test Goggle 2"}}
