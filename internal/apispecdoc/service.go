@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/rog-golang-buddies/api_hub_common/apispecdoc"
 	"github.com/rog-golang-buddies/api_hub_common/apispecproto"
@@ -27,7 +28,39 @@ type ServiceImpl struct {
 }
 
 func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchRequest) (*apispecproto.SearchResponse, error) {
-	return nil, errors.New("not implemented")
+	if req == nil {
+		s.log.Error("nil request body received")
+		return nil, errors.New("request body must not be nil")
+	}
+	pageReq := dto.PageRequest{}
+	if req.Page != nil {
+		pageReq.Page = int(*req.Page)
+	}
+	if req.PerPage != nil {
+		pageReq.PerPage = int(*req.PerPage)
+	} else {
+		pageReq.PerPage = 10
+	}
+	asdPage, err := s.asdRepo.SearchShort(ctx, req.Search, pageReq)
+	if err != nil {
+		return nil, err
+	}
+	res := new(apispecproto.SearchResponse)
+	resDocs := make([]*apispecproto.ShortASD, 0)
+	for _, asd := range asdPage.Data {
+		resDocs = append(resDocs, &apispecproto.ShortASD{
+			Id:          uint32(asd.ID),
+			Name:        asd.Title,
+			Description: asd.Description,
+		})
+	}
+	res.ShortSpecDocs = resDocs
+	res.Page = &apispecproto.Page{
+		Total:   int32(asdPage.Total),
+		Current: int32(asdPage.Page),
+		PerPage: int32(asdPage.PerPage),
+	}
+	return res, nil
 }
 
 func (s *ServiceImpl) Get(ctx context.Context, req *apispecproto.GetRequest) (*apispecproto.GetResponse, error) {

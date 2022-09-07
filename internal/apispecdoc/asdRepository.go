@@ -4,18 +4,27 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	"gorm.io/gorm"
 )
 
 //go:generate mockgen -source=asdRepository.go -destination=./mocks/asdRepository.go
 type AsdRepository interface {
+	//Save saves new ApiSpecDoc entity to the database
 	Save(ctx context.Context, asd *ApiSpecDoc) (uint, error)
+	//Delete ApiSpecDoc soft, i.e. update deleted_at field and prevent the record from appearing in the requests
 	Delete(ctx context.Context, asd *ApiSpecDoc) error
+	//Update ApiSpecDoc by replacing all old nested elements with new ones
 	Update(ctx context.Context, asd *ApiSpecDoc) error
+	//FindById returns full ApiSpecDoc with all nested elements or nil if a such record does not exist
 	FindById(ctx context.Context, id uint) (*ApiSpecDoc, error)
+	//FindByHash returns ApiSpecDoc without nested elements or nil if nothing is found
 	FindByHash(ctx context.Context, hash string) (*ApiSpecDoc, error)
+	//FindByUrl returns ApiSpecDoc without nested elements or nil if nothing is found
 	FindByUrl(ctx context.Context, url string) (*ApiSpecDoc, error)
-	SearchShort(ctx context.Context, search string) ([]*ApiSpecDoc, error)
+	//SearchShort returns a slice of ApiSpecDoc without nested elements that match search string
+	//The search goes by title and url fields
+	SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*ApiSpecDoc], error)
 }
 
 type AsdRepositoryImpl struct {
@@ -85,8 +94,8 @@ func (r *AsdRepositoryImpl) FindByUrl(ctx context.Context, url string) (*ApiSpec
 	}
 }
 
-func (*AsdRepositoryImpl) SearchShort(ctx context.Context, search string) ([]*ApiSpecDoc, error) {
-	return nil, errors.New("not implemented")
+func (*AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*ApiSpecDoc], error) {
+	return dto.Page[*ApiSpecDoc]{}, errors.New("not implemented")
 }
 
 func NewASDRepository(db *gorm.DB) AsdRepository {
