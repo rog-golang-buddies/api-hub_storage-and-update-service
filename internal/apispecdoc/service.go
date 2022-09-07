@@ -64,7 +64,24 @@ func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchReques
 }
 
 func (s *ServiceImpl) Get(ctx context.Context, req *apispecproto.GetRequest) (*apispecproto.GetResponse, error) {
-	return nil, errors.New("not implemented")
+	if req == nil {
+		s.log.Error("nil request body received")
+		return nil, errors.New("request body must not be nil")
+	}
+	apiSpecDoc, err := s.asdRepo.FindById(ctx, uint(req.Id))
+	if err != nil {
+		s.log.Error("error while find ASD by ID: ", err)
+		return nil, err
+	}
+	if apiSpecDoc == nil {
+		s.log.Infof("API spec document not found by id %d", req.Id)
+		return nil, nil
+	}
+	resAsd, err := entityToFullAsd(apiSpecDoc)
+	if err != nil {
+		return nil, err
+	}
+	return &apispecproto.GetResponse{ApiSpecDoc: resAsd}, nil
 }
 
 func (s *ServiceImpl) Save(ctx context.Context, asd *apispecdoc.ApiSpecDoc) (uint, error) {
@@ -199,4 +216,214 @@ func methodsToEntities(methods []*apispecdoc.ApiMethod) ([]*ApiMethod, error) {
 		resMeth = append(resMeth, methEntity)
 	}
 	return resMeth, nil
+}
+
+func entityToFullAsd(asd *ApiSpecDoc) (*apispecproto.FullASD, error) {
+	convertMethods := func(methods []*ApiMethod) ([]*apispecproto.ApiMethod, error) {
+		if methods == nil {
+			return nil, nil
+		}
+		resMethods := make([]*apispecproto.ApiMethod, 0, len(methods))
+		for _, method := range methods {
+			asdMethod, err := entityToFullASDMethod(method)
+			if err != nil {
+				return nil, err
+			}
+			resMethods = append(resMethods, asdMethod)
+		}
+		return resMethods, nil
+	}
+	rootMethods, err := convertMethods(asd.ApiMethods)
+	if err != nil {
+		return nil, err
+	}
+
+	groups := make([]*apispecproto.Group, 0, len(asd.Groups))
+	for _, group := range asd.Groups {
+		methods, err := convertMethods(group.ApiMethods)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, &apispecproto.Group{
+			Name:        group.Name,
+			Description: group.Description,
+			Methods:     methods,
+		})
+	}
+	return &apispecproto.FullASD{
+		Id:          uint32(asd.ID),
+		Title:       asd.Title,
+		Description: asd.Description,
+		Type:        apiTypeToResponse(asd.Type),
+		Groups:      groups,
+		Methods:     rootMethods,
+	}, nil
+}
+
+func entityToFullASDMethod(method *ApiMethod) (*apispecproto.ApiMethod, error) {
+	if method == nil {
+		return &apispecproto.ApiMethod{}, nil
+	}
+	var params []*apispecdoc.Parameter
+	var err error
+	err = json.Unmarshal([]byte(method.Parameters), &params)
+	if err != nil {
+		return nil, err
+	}
+	var resParams []*apispecproto.Parameter
+	if params != nil {
+		resParams = make([]*apispecproto.Parameter, 0, len(params))
+		for _, param := range params {
+			resParams = append(resParams, &apispecproto.Parameter{
+				Name:        param.Name,
+				In:          paramTypeToResponse(param.In),
+				Description: param.Description,
+				Required:    param.Required,
+				Schema:      entitySchemaToResponse(param.Schema),
+			})
+		}
+	}
+
+	body := new(apispecdoc.RequestBody)
+	err = json.Unmarshal([]byte(method.RequestBody), body)
+	if err != nil {
+		return nil, err
+	}
+	resBody := new(apispecproto.RequestBody)
+	resBody.Description = body.Description
+	resBody.Required = body.Required
+	resContent := make([]*apispecproto.RequestBody_MediaTypeObject, 0, len(body.Content))
+	for _, mediaTypeObj := range body.Content {
+		resContent = append(resContent, &apispecproto.RequestBody_MediaTypeObject{
+			MediaType: mediaTypeObj.MediaType,
+			Schema:    entitySchemaToResponse(mediaTypeObj.Schema),
+		})
+	}
+	resBody.Content = resContent
+	var resServers []*apispecproto.Server
+	if method.Servers != nil {
+		resServers = make([]*apispecproto.Server, 0, len(method.Servers))
+		for _, server := range method.Servers {
+			resServers = append(resServers, &apispecproto.Server{
+				Url:         server.URL,
+				Description: server.Description,
+			})
+		}
+	}
+	var resExtDoc *apispecproto.ExternalDoc
+	if method.ExternalDoc != nil {
+		resExtDoc.Description = method.ExternalDoc.Description
+		resExtDoc.Url = method.ExternalDoc.URL
+	}
+	return &apispecproto.ApiMethod{
+		Path:        method.Path,
+		Name:        method.Name,
+		Description: method.Description,
+		Type:        methodTypeToResponse(method.Type),
+		Parameters:  resParams,
+		Servers:     resServers,
+		RequestBody: resBody,
+		ExternalDoc: resExtDoc,
+	}, nil
+}
+
+func entitySchemaToResponse(schema *apispecdoc.Schema) *apispecproto.Schema {
+	return &apispecproto.Schema{
+		Key:         schema.Key,
+		Type:        schemaTypeToResponse(schema.Type),
+		Description: schema.Description,
+		Fields:      entitySchemasToResponses(schema.Fields),
+	}
+}
+
+func entitySchemasToResponses(schemas []*apispecdoc.Schema) []*apispecproto.Schema {
+	resSchemas := make([]*apispecproto.Schema, 0, len(schemas))
+	for _, schema := range schemas {
+		resSchemas = append(resSchemas, entitySchemaToResponse(schema))
+	}
+	return resSchemas
+}
+
+func paramTypeToResponse(tp apispecdoc.ParameterType) apispecproto.ParameterType {
+	switch tp {
+	case apispecdoc.ParameterQuery:
+		return apispecproto.ParameterType_QUERY
+	case apispecdoc.ParameterHeader:
+		return apispecproto.ParameterType_HEADER
+	case apispecdoc.ParameterPath:
+		return apispecproto.ParameterType_PATH
+	case apispecdoc.ParameterCookie:
+		return apispecproto.ParameterType_COOKIE
+	}
+	//TODO to map implementation to prevent extra actions
+
+	return apispecproto.ParameterType_QUERY //TODO unknown type here for default case
+}
+
+func methodTypeToResponse(mt string) apispecproto.MethodType {
+	switch mt {
+	case string(apispecdoc.MethodConnect):
+		return apispecproto.MethodType_CONNECT
+	case string(apispecdoc.MethodGet):
+		return apispecproto.MethodType_GET
+	case string(apispecdoc.MethodPut):
+		return apispecproto.MethodType_PUT
+	case string(apispecdoc.MethodPost):
+		return apispecproto.MethodType_POST
+	case string(apispecdoc.MethodDelete):
+		return apispecproto.MethodType_DELETE
+	case string(apispecdoc.MethodOptions):
+		return apispecproto.MethodType_OPTIONS
+	case string(apispecdoc.MethodHead):
+		return apispecproto.MethodType_HEAD
+	case string(apispecdoc.MethodPatch):
+		return apispecproto.MethodType_PATCH
+	case string(apispecdoc.MethodTrace):
+		return apispecproto.MethodType_TRACE
+	}
+	//TODO to map implementation to prevent extra actions
+
+	return apispecproto.MethodType_GET //TODO unknown type here for default case
+}
+
+func schemaTypeToResponse(st apispecdoc.SchemaType) apispecproto.SchemaType {
+	switch st {
+	case apispecdoc.NotDefined:
+		return apispecproto.SchemaType_NOT_DEFINED
+	case apispecdoc.Integer:
+		return apispecproto.SchemaType_INTEGER
+	case apispecdoc.Boolean:
+		return apispecproto.SchemaType_BOOLEAN
+	case apispecdoc.Number:
+		return apispecproto.SchemaType_NUMBER
+	case apispecdoc.String:
+		return apispecproto.SchemaType_STRING
+	case apispecdoc.Date:
+		return apispecproto.SchemaType_DATE
+	case apispecdoc.Array:
+		return apispecproto.SchemaType_ARRAY
+	case apispecdoc.Map:
+		return apispecproto.SchemaType_MAP
+	case apispecdoc.OneOf:
+		return apispecproto.SchemaType_ONE_OF
+	case apispecdoc.AnyOf:
+		return apispecproto.SchemaType_ANY_OF
+	case apispecdoc.AllOf:
+		return apispecproto.SchemaType_ALL_OF
+	case apispecdoc.Not:
+		return apispecproto.SchemaType_NOT
+	case apispecdoc.Object:
+		return apispecproto.SchemaType_OBJECT
+	default:
+		return apispecproto.SchemaType_UNKNOWN
+	}
+	//TODO to map implementation to prevent extra actions
+}
+
+func apiTypeToResponse(asdT string) apispecproto.Type {
+	switch asdT {
+	case string(apispecdoc.TypeOpenApi):
+		return apispecproto.Type_OPEN_API
+	}
+	return apispecproto.Type_OPEN_API
 }
