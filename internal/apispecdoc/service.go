@@ -22,6 +22,46 @@ func NewService(log logger.Logger, repo AsdRepository) Service {
 	return &ServiceImpl{log: log, asdRepo: repo}
 }
 
+var asdTypeMap = map[string]apispecproto.Type{
+	string(apispecdoc.TypeOpenApi): apispecproto.Type_OPEN_API,
+}
+
+var methodTypeMap = map[string]apispecproto.MethodType{
+	string(apispecdoc.MethodConnect): apispecproto.MethodType_CONNECT,
+	string(apispecdoc.MethodGet):     apispecproto.MethodType_GET,
+	string(apispecdoc.MethodPut):     apispecproto.MethodType_PUT,
+	string(apispecdoc.MethodPost):    apispecproto.MethodType_POST,
+	string(apispecdoc.MethodDelete):  apispecproto.MethodType_DELETE,
+	string(apispecdoc.MethodOptions): apispecproto.MethodType_OPTIONS,
+	string(apispecdoc.MethodHead):    apispecproto.MethodType_HEAD,
+	string(apispecdoc.MethodPatch):   apispecproto.MethodType_PATCH,
+	string(apispecdoc.MethodTrace):   apispecproto.MethodType_TRACE,
+}
+
+var schemaTypeMap = map[apispecdoc.SchemaType]apispecproto.SchemaType{
+	apispecdoc.Unknown:    apispecproto.SchemaType_UNKNOWN,
+	apispecdoc.NotDefined: apispecproto.SchemaType_NOT_DEFINED,
+	apispecdoc.Integer:    apispecproto.SchemaType_INTEGER,
+	apispecdoc.Boolean:    apispecproto.SchemaType_BOOLEAN,
+	apispecdoc.Number:     apispecproto.SchemaType_NUMBER,
+	apispecdoc.String:     apispecproto.SchemaType_STRING,
+	apispecdoc.Date:       apispecproto.SchemaType_DATE,
+	apispecdoc.Array:      apispecproto.SchemaType_ARRAY,
+	apispecdoc.Map:        apispecproto.SchemaType_MAP,
+	apispecdoc.OneOf:      apispecproto.SchemaType_ONE_OF,
+	apispecdoc.AnyOf:      apispecproto.SchemaType_ANY_OF,
+	apispecdoc.AllOf:      apispecproto.SchemaType_ALL_OF,
+	apispecdoc.Not:        apispecproto.SchemaType_NOT,
+	apispecdoc.Object:     apispecproto.SchemaType_OBJECT,
+}
+
+var parameterTypeMap = map[apispecdoc.ParameterType]apispecproto.ParameterType{
+	apispecdoc.ParameterQuery:  apispecproto.ParameterType_QUERY,
+	apispecdoc.ParameterHeader: apispecproto.ParameterType_HEADER,
+	apispecdoc.ParameterPath:   apispecproto.ParameterType_PATH,
+	apispecdoc.ParameterCookie: apispecproto.ParameterType_COOKIE,
+}
+
 type ServiceImpl struct {
 	log     logger.Logger
 	asdRepo AsdRepository
@@ -344,86 +384,34 @@ func entitySchemasToResponses(schemas []*apispecdoc.Schema) []*apispecproto.Sche
 	return resSchemas
 }
 
-func paramTypeToResponse(tp apispecdoc.ParameterType) apispecproto.ParameterType {
-	switch tp {
-	case apispecdoc.ParameterQuery:
-		return apispecproto.ParameterType_QUERY
-	case apispecdoc.ParameterHeader:
-		return apispecproto.ParameterType_HEADER
-	case apispecdoc.ParameterPath:
-		return apispecproto.ParameterType_PATH
-	case apispecdoc.ParameterCookie:
-		return apispecproto.ParameterType_COOKIE
+func paramTypeToResponse(pt apispecdoc.ParameterType) apispecproto.ParameterType {
+	res, ok := parameterTypeMap[pt]
+	if ok {
+		return res
 	}
-	//TODO to map implementation to prevent extra actions
-
 	return apispecproto.ParameterType_QUERY //TODO unknown type here for default case
 }
 
 func methodTypeToResponse(mt string) apispecproto.MethodType {
-	switch mt {
-	case string(apispecdoc.MethodConnect):
-		return apispecproto.MethodType_CONNECT
-	case string(apispecdoc.MethodGet):
-		return apispecproto.MethodType_GET
-	case string(apispecdoc.MethodPut):
-		return apispecproto.MethodType_PUT
-	case string(apispecdoc.MethodPost):
-		return apispecproto.MethodType_POST
-	case string(apispecdoc.MethodDelete):
-		return apispecproto.MethodType_DELETE
-	case string(apispecdoc.MethodOptions):
-		return apispecproto.MethodType_OPTIONS
-	case string(apispecdoc.MethodHead):
-		return apispecproto.MethodType_HEAD
-	case string(apispecdoc.MethodPatch):
-		return apispecproto.MethodType_PATCH
-	case string(apispecdoc.MethodTrace):
-		return apispecproto.MethodType_TRACE
+	res, ok := methodTypeMap[mt]
+	if ok {
+		return res
 	}
-	//TODO to map implementation to prevent extra actions
-
 	return apispecproto.MethodType_GET //TODO unknown type here for default case
 }
 
 func schemaTypeToResponse(st apispecdoc.SchemaType) apispecproto.SchemaType {
-	switch st {
-	case apispecdoc.NotDefined:
-		return apispecproto.SchemaType_NOT_DEFINED
-	case apispecdoc.Integer:
-		return apispecproto.SchemaType_INTEGER
-	case apispecdoc.Boolean:
-		return apispecproto.SchemaType_BOOLEAN
-	case apispecdoc.Number:
-		return apispecproto.SchemaType_NUMBER
-	case apispecdoc.String:
-		return apispecproto.SchemaType_STRING
-	case apispecdoc.Date:
-		return apispecproto.SchemaType_DATE
-	case apispecdoc.Array:
-		return apispecproto.SchemaType_ARRAY
-	case apispecdoc.Map:
-		return apispecproto.SchemaType_MAP
-	case apispecdoc.OneOf:
-		return apispecproto.SchemaType_ONE_OF
-	case apispecdoc.AnyOf:
-		return apispecproto.SchemaType_ANY_OF
-	case apispecdoc.AllOf:
-		return apispecproto.SchemaType_ALL_OF
-	case apispecdoc.Not:
-		return apispecproto.SchemaType_NOT
-	case apispecdoc.Object:
-		return apispecproto.SchemaType_OBJECT
-	default:
-		return apispecproto.SchemaType_UNKNOWN
+	res, ok := schemaTypeMap[st]
+	if ok {
+		return res
 	}
-	//TODO to map implementation to prevent extra actions
+	return apispecproto.SchemaType_UNKNOWN
 }
 
 func apiTypeToResponse(asdT string) apispecproto.Type {
-	switch asdT {
-	case string(apispecdoc.TypeOpenApi):
-		return apispecproto.Type_OPEN_API
+	res, ok := asdTypeMap[asdT]
+	if ok {
+		return res
 	}
 	return apispecproto.Type_OPEN_API
 }
