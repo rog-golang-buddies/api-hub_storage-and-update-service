@@ -8,7 +8,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.10.2
 	github.com/pkg/errors v0.9.1
-	github.com/rog-golang-buddies/api_hub_common v0.1.2
+	github.com/rog-golang-buddies/api_hub_common v0.1.3
 	github.com/stretchr/testify v1.8.0
 	github.com/testcontainers/testcontainers-go v0.13.0
 	github.com/wagslane/go-rabbitmq v0.10.0

@@ -39,7 +39,7 @@ var methodTypeMap = map[string]apispecproto.MethodType{
 }
 
 var schemaTypeMap = map[apispecdoc.SchemaType]apispecproto.SchemaType{
-	apispecdoc.Unknown:    apispecproto.SchemaType_UNKNOWN,
+	apispecdoc.Unknown:    apispecproto.SchemaType_UNKNOWN_SCHEMA,
 	apispecdoc.NotDefined: apispecproto.SchemaType_NOT_DEFINED,
 	apispecdoc.Integer:    apispecproto.SchemaType_INTEGER,
 	apispecdoc.Boolean:    apispecproto.SchemaType_BOOLEAN,
@@ -389,7 +389,7 @@ func paramTypeToResponse(pt apispecdoc.ParameterType) apispecproto.ParameterType
 	if ok {
 		return res
 	}
-	return apispecproto.ParameterType_QUERY //TODO unknown type here for default case
+	return apispecproto.ParameterType_UNKNOWN_PARAM
 }
 
 func methodTypeToResponse(mt string) apispecproto.MethodType {
@@ -397,7 +397,7 @@ func methodTypeToResponse(mt string) apispecproto.MethodType {
 	if ok {
 		return res
 	}
-	return apispecproto.MethodType_GET //TODO unknown type here for default case
+	return apispecproto.MethodType_UNKNOWN_METHOD
 }
 
 func schemaTypeToResponse(st apispecdoc.SchemaType) apispecproto.SchemaType {
@@ -405,7 +405,7 @@ func schemaTypeToResponse(st apispecdoc.SchemaType) apispecproto.SchemaType {
 	if ok {
 		return res
 	}
-	return apispecproto.SchemaType_UNKNOWN
+	return apispecproto.SchemaType_UNKNOWN_SCHEMA
 }
 
 func apiTypeToResponse(asdT string) apispecproto.Type {
@@ -413,5 +413,5 @@ func apiTypeToResponse(asdT string) apispecproto.Type {
 	if ok {
 		return res
 	}
-	return apispecproto.Type_OPEN_API
+	return apispecproto.Type_UNKNOWN_API
 }

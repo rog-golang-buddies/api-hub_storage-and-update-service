@@ -1008,8 +1008,8 @@ github.com/rabbitmq/amqp091-go v1.4.0 h1:T2G+J9W9OY4p64Di23J6yH7tOkMocgnESvYeBju
 github.com/rabbitmq/amqp091-go v1.4.0/go.mod h1:JsV0ofX5f1nwOGafb8L5rBItt9GyhfQfcJj+oyz0dGg=
 github.com/remyoudompheng/bigfft v0.0.0-20190728182440-6a916e37a237/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
-github.com/rog-golang-buddies/api_hub_common v0.1.2 h1:2a8xeVXbh2fodMrqb1YKY+Tsa97E5J+k2HeMj+qwLMQ=
-github.com/rog-golang-buddies/api_hub_common v0.1.2/go.mod h1:lK3L/e21s8rYwOZYrSrnP3yaAST3fgKlh00WW6igI0s=
+github.com/rog-golang-buddies/api_hub_common v0.1.3 h1:lUml9+Ln3oP9OZEMaNKwhU42KZLUaL1MGpjsoDsIBjc=
+github.com/rog-golang-buddies/api_hub_common v0.1.3/go.mod h1:lK3L/e21s8rYwOZYrSrnP3yaAST3fgKlh00WW6igI0s=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/rogpeppe/go-internal v1.1.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=

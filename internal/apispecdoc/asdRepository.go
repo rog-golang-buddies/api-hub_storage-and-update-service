@@ -10,6 +10,12 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+// AsdPage here represents a fixed type.
+// It's just overwork for gomock i.e. it can't generate a mock of interface with generics used in it.
+// Issue closed https://github.com/golang/mock/issues/621 - awaiting for gomock version 1.7.0.
+// TODO delete on gomock 1.7.0 version released
+type AsdPage = dto.Page[*ApiSpecDoc]
+
 //go:generate mockgen -source=asdRepository.go -destination=./mocks/asdRepository.go
 type AsdRepository interface {
 	//Save saves new ApiSpecDoc entity to the database
@@ -26,7 +32,7 @@ type AsdRepository interface {
 	FindByUrl(ctx context.Context, url string) (*ApiSpecDoc, error)
 	//SearchShort returns a slice of ApiSpecDoc without nested elements that match search string
 	//The search goes by title and url fields
-	SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*ApiSpecDoc], error)
+	SearchShort(ctx context.Context, search string, page dto.PageRequest) (AsdPage, error)
 }
 
 type AsdRepositoryImpl struct {
@@ -109,7 +115,7 @@ func (r *AsdRepositoryImpl) FindByUrl(ctx context.Context, url string) (*ApiSpec
 	}
 }
 
-func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*ApiSpecDoc], error) {
+func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (AsdPage, error) {
 	var specDocs dto.Page[*ApiSpecDoc]
 	err := r.db.WithContext(ctx).Limit(page.Page).Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").Find(&specDocs).Error
 	if err != nil {
