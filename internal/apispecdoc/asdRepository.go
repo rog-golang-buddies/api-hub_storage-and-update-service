@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 //go:generate mockgen -source=asdRepository.go -destination=./mocks/asdRepository.go
@@ -36,8 +38,9 @@ func (r *AsdRepositoryImpl) Save(ctx context.Context, asd *ApiSpecDoc) (uint, er
 	return asd.ID, result.Error
 }
 
-func (*AsdRepositoryImpl) Delete(ctx context.Context, asd *ApiSpecDoc) error {
-	return errors.New("not implemented")
+func (r *AsdRepositoryImpl) Delete(ctx context.Context, asd *ApiSpecDoc) error {
+	result := r.db.WithContext(ctx).Delete(&asd)
+	return result.Error
 }
 
 func (r *AsdRepositoryImpl) Update(ctx context.Context, asd *ApiSpecDoc) error {
@@ -58,8 +61,20 @@ func (r *AsdRepositoryImpl) Update(ctx context.Context, asd *ApiSpecDoc) error {
 	})
 }
 
-func (*AsdRepositoryImpl) FindById(ctx context.Context, id uint) (*ApiSpecDoc, error) {
-	return nil, errors.New("not implemented")
+func (r *AsdRepositoryImpl) FindById(ctx context.Context, id uint) (*ApiSpecDoc, error) {
+	var specDocs []*ApiSpecDoc
+	err := r.db.WithContext(ctx).Where("id = ?", id).Preload(clause.Associations).Find(&specDocs).Error
+	if err != nil {
+		return nil, err
+	}
+	switch len(specDocs) {
+	case 0:
+		return nil, nil
+	case 1:
+		return specDocs[0], nil
+	default:
+		return nil, fmt.Errorf("incorrect number of results, retrieved: %d", len(specDocs))
+	}
 }
 
 func (r *AsdRepositoryImpl) FindByHash(ctx context.Context, hash string) (*ApiSpecDoc, error) {
@@ -94,8 +109,13 @@ func (r *AsdRepositoryImpl) FindByUrl(ctx context.Context, url string) (*ApiSpec
 	}
 }
 
-func (*AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*ApiSpecDoc], error) {
-	return dto.Page[*ApiSpecDoc]{}, errors.New("not implemented")
+func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*ApiSpecDoc], error) {
+	var specDocs dto.Page[*ApiSpecDoc]
+	err := r.db.WithContext(ctx).Limit(page.Page).Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").Find(&specDocs).Error
+	if err != nil {
+		return dto.Page[*ApiSpecDoc]{}, err
+	}
+	return specDocs, nil
 }
 
 func NewASDRepository(db *gorm.DB) AsdRepository {
