@@ -11,7 +11,7 @@ import (
 )
 
 // AsdPage here represents a fixed type.
-// It's just overwork for gomock i.e. it can't generate a mock of interface with generics used in it.
+// It's just workaround for gomock i.e. it can't generate a mock of interface with generics used in it.
 // Issue closed https://github.com/golang/mock/issues/621 - awaiting for gomock version 1.7.0.
 // TODO delete on gomock 1.7.0 version released
 type AsdPage = dto.Page[*ApiSpecDoc]
