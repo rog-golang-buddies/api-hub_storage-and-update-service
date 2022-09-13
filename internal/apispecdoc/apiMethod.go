@@ -1,7 +1,7 @@
 package apispecdoc
 
 type ApiMethod struct {
-	ID           int `gorm:"primaryKey"`
+	ID           uint `gorm:"primaryKey"`
 	Path         string
 	Name         string
 	Description  string

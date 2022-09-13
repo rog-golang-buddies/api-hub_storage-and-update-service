@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/db"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/grpc"
@@ -11,6 +10,10 @@ import (
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/handler"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/publisher"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/repository"
+
+	//"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/repository"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/service"
 )
 
 func Start() int {
@@ -32,8 +35,8 @@ func Start() int {
 		log.Error("error while db setup: ", err)
 		return 1
 	}
-	asdRepo := apispecdoc.NewASDRepository(DB)
-	asdServ := apispecdoc.NewService(log, asdRepo)
+	asdRepo := repository.NewASDRepository(DB)
+	asdServ := service.NewService(log, asdRepo)
 
 	//initialize publisher connection to the queue
 	//this library assumes using one publisher and one consumer per application

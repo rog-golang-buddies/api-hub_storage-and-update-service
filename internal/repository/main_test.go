@@ -1,4 +1,4 @@
-package apispecdoc
+package repository
 
 import (
 	"context"

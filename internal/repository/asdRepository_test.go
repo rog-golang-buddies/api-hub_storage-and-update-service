@@ -1,7 +1,8 @@
-package apispecdoc
+package repository
 
 import (
 	"context"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 	"testing"
 
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
@@ -9,12 +10,12 @@ import (
 )
 
 func TestSave(t *testing.T) {
-	servG := []*Server{{URL: "test gr url", Description: "test description G"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
-	groups := []*Group{{Name: "test name", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test description 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "test gr url", Description: "test description G"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test name", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test description 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Trello API",
 		Description: "API for Trello",
 		Type:        "1",
@@ -31,11 +32,11 @@ func TestSave(t *testing.T) {
 
 func TestSaveErrorOnMultipleApiMethodRelations(t *testing.T) {
 	t.Skip("Currently skipping because of bug https://github.com/go-gorm/gorm/issues/5673")
-	meth := &ApiMethod{Path: "test/path", Name: "test name"}
-	apiMethodsG := []*ApiMethod{meth}
-	apiMethods := []*ApiMethod{meth}
-	groups := []*Group{{Name: "test group", Description: "test description", ApiMethods: apiMethodsG}}
-	asd := ApiSpecDoc{Title: "test ASD", Groups: groups, ApiMethods: apiMethods}
+	meth := &apispecdoc.ApiMethod{Path: "test/path", Name: "test name"}
+	apiMethodsG := []*apispecdoc.ApiMethod{meth}
+	apiMethods := []*apispecdoc.ApiMethod{meth}
+	groups := []*apispecdoc.Group{{Name: "test group", Description: "test description", ApiMethods: apiMethodsG}}
+	asd := apispecdoc.ApiSpecDoc{Title: "test ASD", Groups: groups, ApiMethods: apiMethods}
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &asd)
 	assert.NotNil(t, err)
@@ -43,12 +44,12 @@ func TestSaveErrorOnMultipleApiMethodRelations(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	servG := []*Server{{URL: "test gr url", Description: "test description G"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
-	groups := []*Group{{Name: "test name", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test description 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "test gr url", Description: "test description G"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test name", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test description 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Trello API",
 		Description: "API for Trello",
 		Type:        "1",
@@ -73,12 +74,12 @@ func TestDelete(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	servG := []*Server{{URL: "test gr url", Description: "test description G"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
-	groups := []*Group{{Name: "test name", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test description 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "test gr url", Description: "test description G"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test name", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test description 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Trello API",
 		Description: "API for Trello",
 		Type:        "1",
@@ -91,12 +92,12 @@ func TestUpdate(t *testing.T) {
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
 	assert.True(t, id == entity.ID)
-	servG = []*Server{{URL: "test google url", Description: "test description Google"}}
-	apiMethG = []*ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
-	groups = []*Group{{Name: "test google", ApiMethods: apiMethG}}
-	servs = []*Server{{URL: "test servG", Description: "test Goggle 2"}}
-	apiMeth = []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity = ApiSpecDoc{
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
 		Title:       "Google API",
 		Description: "API for Google",
 		Type:        "2",
@@ -114,13 +115,19 @@ func TestUpdate(t *testing.T) {
 	assert.True(t, entity.Title == result.Title)
 }
 
+func TestUpdateErrorOnNil(t *testing.T) {
+	rep := AsdRepositoryImpl{db: gDb}
+	err := rep.Update(context.Background(), nil)
+	assert.NotNil(t, err)
+}
+
 func TestFindById(t *testing.T) {
-	servG := []*Server{{URL: "test gr url", Description: "test description G"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
-	groups := []*Group{{Name: "test name", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test description 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "test gr url", Description: "test description G"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test name", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test description 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Trello API",
 		Description: "API for Trello",
 		Type:        "1",
@@ -133,12 +140,12 @@ func TestFindById(t *testing.T) {
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
 	assert.True(t, id == entity.ID)
-	servG = []*Server{{URL: "test google url", Description: "test description Google"}}
-	apiMethG = []*ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
-	groups = []*Group{{Name: "test google", ApiMethods: apiMethG}}
-	servs = []*Server{{URL: "test servG", Description: "test Goggle 2"}}
-	apiMeth = []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity = ApiSpecDoc{
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
 		Title:       "Google API",
 		Description: "API for Google",
 		Type:        "2",
@@ -158,12 +165,12 @@ func TestFindById(t *testing.T) {
 }
 
 func TestFindByHash(t *testing.T) {
-	servG := []*Server{{URL: "test gr url", Description: "test description G"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
-	groups := []*Group{{Name: "test name", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test description 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "test gr url", Description: "test description G"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test name", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test description 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Trello API",
 		Description: "API for Trello",
 		Type:        "1",
@@ -184,12 +191,12 @@ func TestFindByHash(t *testing.T) {
 }
 
 func TestFindByUrl(t *testing.T) {
-	servG := []*Server{{URL: "test gr url", Description: "test description G"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
-	groups := []*Group{{Name: "test name", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test description 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "test gr url", Description: "test description G"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test name", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test name", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test description 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Trello API",
 		Description: "API for Trello",
 		Type:        "1",
@@ -211,12 +218,12 @@ func TestFindByUrl(t *testing.T) {
 
 func TestSearchShort(t *testing.T) {
 	t.Skip("generics")
-	servG := []*Server{{URL: "google.com", Description: "test description Google"}}
-	apiMethG := []*ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
-	groups := []*Group{{Name: "test google", ApiMethods: apiMethG}}
-	servs := []*Server{{URL: "test servG", Description: "test Goggle 2"}}
-	apiMeth := []*ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
-	entity := ApiSpecDoc{
+	servG := []*apispecdoc.Server{{URL: "google.com", Description: "test description Google"}}
+	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups := []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs := []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth := []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity := apispecdoc.ApiSpecDoc{
 		Title:       "Google API",
 		Description: "API for Google",
 		Type:        "2",
