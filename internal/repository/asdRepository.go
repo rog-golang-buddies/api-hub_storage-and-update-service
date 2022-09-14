@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
@@ -88,13 +89,14 @@ func (r *AsdRepositoryImpl) FindByUrl(ctx context.Context, url string) (*apispec
 	}
 }
 
-func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (apispecdoc.AsdPage, error) {
-	var specDocs dto.Page[*apispecdoc.ApiSpecDoc]
+func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*apispecdoc.ApiSpecDoc], error) {
+	var specDocs []*apispecdoc.ApiSpecDoc
+	var count int
 	err := r.db.WithContext(ctx).Limit(page.Page).Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").Find(&specDocs).Error
 	if err != nil {
 		return dto.Page[*apispecdoc.ApiSpecDoc]{}, err
 	}
-	return specDocs, nil
+	return dto.Page[*apispecdoc.ApiSpecDoc]{Data: specDocs, Page: page.Page, PerPage: page.PerPage, Total: count}, nil
 }
 
 func NewASDRepository(db *gorm.DB) apispecdoc.AsdRepository {

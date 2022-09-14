@@ -2,8 +2,9 @@ package repository
 
 import (
 	"context"
-	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 	"testing"
+
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +27,7 @@ func TestSave(t *testing.T) {
 	}
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	assert.Nil(t, err)
 }
 
@@ -40,7 +41,7 @@ func TestSaveErrorOnMultipleApiMethodRelations(t *testing.T) {
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &asd)
 	assert.NotNil(t, err)
-	assert.True(t, id == 0)
+	assert.Equal(t, id, 0)
 }
 
 func TestDelete(t *testing.T) {
@@ -61,11 +62,11 @@ func TestDelete(t *testing.T) {
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	result, err := rep.FindById(context.Background(), entity.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.ID == entity.ID)
+	assert.Equal(t, result.ID, entity.ID)
 	err = rep.Delete(context.Background(), &entity)
 	assert.Nil(t, err)
 	result, err = rep.FindById(context.Background(), entity.ID)
@@ -91,7 +92,7 @@ func TestUpdate(t *testing.T) {
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
 	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
 	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
@@ -111,8 +112,8 @@ func TestUpdate(t *testing.T) {
 	result, err := rep.FindById(context.Background(), entity.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, entity.ID == result.ID)
-	assert.True(t, entity.Title == result.Title)
+	assert.Equal(t, entity.ID, result.ID)
+	assert.Equal(t, entity.Title, result.Title)
 }
 
 func TestUpdateErrorOnNil(t *testing.T) {
@@ -139,7 +140,7 @@ func TestFindById(t *testing.T) {
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
 	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
 	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
@@ -156,12 +157,12 @@ func TestFindById(t *testing.T) {
 	}
 	id, err = rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	result, err := rep.FindById(context.Background(), entity.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.ID == entity.ID)
-	assert.True(t, result.Type == entity.Type)
+	assert.Equal(t, result.ID, entity.ID)
+	assert.Equal(t, result.Type, entity.Type)
 }
 
 func TestFindByHash(t *testing.T) {
@@ -182,12 +183,12 @@ func TestFindByHash(t *testing.T) {
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	result, err := rep.FindByHash(context.Background(), "595f44fec1e92a71d3e9e77456ba80d1")
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.Md5sum == entity.Md5sum)
-	assert.True(t, result.ID == entity.ID)
+	assert.Equal(t, result.Md5sum, entity.Md5sum)
+	assert.Equal(t, result.ID, entity.ID)
 }
 
 func TestFindByUrl(t *testing.T) {
@@ -208,16 +209,15 @@ func TestFindByUrl(t *testing.T) {
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	result, err := rep.FindByUrl(context.Background(), "wwwwwww.trello.com")
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.Url == entity.Url)
-	assert.True(t, result.ID == entity.ID)
+	assert.Equal(t, result.Url, entity.Url)
+	assert.Equal(t, result.ID, entity.ID)
 }
 
 func TestSearchShort(t *testing.T) {
-	t.Skip("generics")
 	servG := []*apispecdoc.Server{{URL: "google.com", Description: "test description Google"}}
 	apiMethG := []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
 	groups := []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
@@ -229,15 +229,16 @@ func TestSearchShort(t *testing.T) {
 		Type:        "2",
 		Md5sum:      "lkjafs871324r",
 		Groups:      groups,
-		Url:         "wwww.google.com",
+		Url:         "wwwww.google.com",
 		ApiMethods:  apiMeth,
 	}
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
 	number := dto.PageRequest{Page: 1}
 	assert.Nil(t, err)
-	assert.True(t, id == entity.ID)
+	assert.Equal(t, id, entity.ID)
 	result, err := rep.SearchShort(context.Background(), "Google", number)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
+	assert.Equal(t, result.Data[0].Title, entity.Title)
 }
