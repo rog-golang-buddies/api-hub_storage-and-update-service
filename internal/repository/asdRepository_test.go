@@ -241,4 +241,7 @@ func TestSearchShort(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, result.Data[0].Title, entity.Title)
+	assert.Equal(t, number.Page, result.Page)
+	assert.Equal(t, number.PerPage, result.PerPage)
+	assert.GreaterOrEqual(t, result.Total, len(result.Data))
 }
