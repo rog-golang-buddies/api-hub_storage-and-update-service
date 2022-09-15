@@ -68,7 +68,7 @@ func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchReques
 	}
 	pageReq := dto.PageRequest{}
 	if req.Page != nil {
-		pageReq.Page = int(*req.Page)
+		pageReq.Page = int(*req.Page) - 1
 	}
 	if req.PerPage != nil {
 		pageReq.PerPage = int(*req.PerPage)
