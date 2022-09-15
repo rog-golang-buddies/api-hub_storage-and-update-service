@@ -49,8 +49,8 @@ func TestServiceImpl_Search(t *testing.T) {
 	}
 	pageRes := dto.Page[*apispecdoc.ApiSpecDoc]{
 		Data:    []*apispecdoc.ApiSpecDoc{&expAsd},
-		Page:    int(page),
-		PerPage: int(perPage),
+		Page:    pageReq.Page,
+		PerPage: pageReq.PerPage,
 		Total:   5,
 	}
 	repo.EXPECT().SearchShort(ctx, search, pageReq).Return(pageRes, nil)
@@ -59,7 +59,7 @@ func TestServiceImpl_Search(t *testing.T) {
 	assert.NotNil(t, result)
 
 	//Check pages
-	assert.Equal(t, pageRes.Page, int(result.Page.Current))
+	assert.Equal(t, pageRes.Page+1, int(result.Page.Current))
 	assert.Equal(t, pageRes.PerPage, int(result.Page.PerPage))
 	assert.Equal(t, pageRes.Total, int(result.Page.Total))
 

@@ -101,7 +101,7 @@ func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchReques
 	res.ShortSpecDocs = resDocs
 	res.Page = &apispecproto.Page{
 		Total:   int32(asdPage.Total),
-		Current: int32(asdPage.Page),
+		Current: int32(asdPage.Page) + 1,
 		PerPage: int32(asdPage.PerPage),
 	}
 	return res, nil
