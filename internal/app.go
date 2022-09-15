@@ -36,7 +36,7 @@ func Start() int {
 		return 1
 	}
 	asdRepo := repository.NewASDRepository(DB)
-	asdServ := service.NewService(log, asdRepo)
+	asdServ := service.NewService(log, asdRepo, &conf.Page)
 
 	//initialize publisher connection to the queue
 	//this library assumes using one publisher and one consumer per application

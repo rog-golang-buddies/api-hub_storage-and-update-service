@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	asdentity "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/rog-golang-buddies/api_hub_common/apispecdoc"
@@ -12,8 +13,8 @@ import (
 	"time"
 )
 
-func NewService(log logger.Logger, repo asdentity.AsdRepository) asdentity.Service {
-	return &ServiceImpl{log: log, asdRepo: repo}
+func NewService(log logger.Logger, repo asdentity.AsdRepository, pageConf *config.PageConfig) asdentity.Service {
+	return &ServiceImpl{log: log, asdRepo: repo, conf: pageConf}
 }
 
 var asdTypeMap = map[string]apispecproto.Type{
@@ -59,6 +60,7 @@ var parameterTypeMap = map[apispecdoc.ParameterType]apispecproto.ParameterType{
 type ServiceImpl struct {
 	log     logger.Logger
 	asdRepo asdentity.AsdRepository
+	conf    *config.PageConfig
 }
 
 func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchRequest) (*apispecproto.SearchResponse, error) {
@@ -70,10 +72,18 @@ func (s *ServiceImpl) Search(ctx context.Context, req *apispecproto.SearchReques
 	if req.Page != nil {
 		pageReq.Page = int(*req.Page) - 1
 	}
+	if pageReq.Page < 0 {
+		s.log.Warnf("retrieved incorrect page number: %d, must be >= 1", req.Page)
+		pageReq.Page = 0
+	}
 	if req.PerPage != nil {
 		pageReq.PerPage = int(*req.PerPage)
 	} else {
 		pageReq.PerPage = 10
+	}
+	if pageReq.PerPage < s.conf.MinPerPage {
+		s.log.Warnf("retrieved incorrect page size: %d, must be >= %d", req.PerPage, s.conf.MinPerPage)
+		pageReq.PerPage = s.conf.MinPerPage
 	}
 	asdPage, err := s.asdRepo.SearchShort(ctx, req.Search, pageReq)
 	if err != nil {

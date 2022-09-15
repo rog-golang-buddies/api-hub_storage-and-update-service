@@ -6,6 +6,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 	asdmock "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc/mock"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	mock_logger "github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger/mocks"
 	apispecdoc2 "github.com/rog-golang-buddies/api_hub_common/apispecdoc"
@@ -26,6 +27,7 @@ func TestServiceImpl_Search(t *testing.T) {
 	service := ServiceImpl{
 		log:     log,
 		asdRepo: repo,
+		conf:    &config.PageConfig{MinPerPage: 2},
 	}
 	var page, perPage int32 = 1, 10
 	req := apispecproto.SearchRequest{
@@ -35,7 +37,7 @@ func TestServiceImpl_Search(t *testing.T) {
 	}
 	pageReq := dto.PageRequest{
 		PerPage: int(perPage),
-		Page:    int(page),
+		Page:    int(page) - 1,
 	}
 	expAsd := apispecdoc.ApiSpecDoc{
 		Model: gorm.Model{
@@ -67,6 +69,46 @@ func TestServiceImpl_Search(t *testing.T) {
 	assert.Equal(t, expAsd.ID, uint(resAsd.Id))
 	assert.Equal(t, expAsd.Title, resAsd.Name)
 	assert.Equal(t, expAsd.Description, resAsd.Description)
+}
+
+func TestServiceImpl_SearchIncorrectPage(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	log := mock_logger.NewMockLogger(ctrl)
+
+	repo := asdmock.NewMockAsdRepository(ctrl)
+	ctx := context.Background()
+	search := "search"
+	minPage := 2
+	service := ServiceImpl{
+		log:     log,
+		asdRepo: repo,
+		conf:    &config.PageConfig{MinPerPage: minPage},
+	}
+	var page, perPage int32 = 0, 0
+	req := apispecproto.SearchRequest{
+		Search:  "search",
+		Page:    &page,
+		PerPage: &perPage,
+	}
+	pageRes := dto.Page[*apispecdoc.ApiSpecDoc]{
+		Data:    []*apispecdoc.ApiSpecDoc{},
+		Page:    int(page),
+		PerPage: int(perPage),
+		Total:   5,
+	}
+	var pageReq *dto.PageRequest
+	repo.EXPECT().SearchShort(ctx, search, gomock.Any()).
+		Do(func(ctx context.Context, search string, pr dto.PageRequest) {
+			pageReq = &pr
+		}).
+		Return(pageRes, nil)
+	log.EXPECT().Warnf(gomock.Any(), gomock.Any()).Times(2)
+	result, err := service.Search(ctx, &req)
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.NotNil(t, pageReq)
+	assert.Equal(t, 0, pageReq.Page)
+	assert.Equal(t, minPage, pageReq.PerPage)
 }
 
 func TestServiceImpl_Get(t *testing.T) {
@@ -207,6 +249,7 @@ func TestServiceImpl_GetNilArgError(t *testing.T) {
 	service := ServiceImpl{
 		log:     log,
 		asdRepo: repo,
+		conf:    &config.PageConfig{MinPerPage: 2},
 	}
 	log.EXPECT().Error(gomock.Any())
 	res, err := service.Get(ctx, nil)
