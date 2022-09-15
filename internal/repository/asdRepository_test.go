@@ -328,5 +328,5 @@ func TestSearchShort(t *testing.T) {
 	assert.Equal(t, result.Data[3].Title, entity.Title)
 	assert.Equal(t, number.Page, result.Page)
 	assert.Equal(t, number.PerPage, result.PerPage)
-	assert.GreaterOrEqual(t, result.Total, int64(len(result.Data)))
+	assert.GreaterOrEqual(t, int(result.Total), len(result.Data))
 }

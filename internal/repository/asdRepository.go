@@ -100,7 +100,7 @@ func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page
 	if err != nil {
 		return dto.Page[*apispecdoc.ApiSpecDoc]{}, err
 	}
-	return dto.Page[*apispecdoc.ApiSpecDoc]{Data: specDocs, Page: page.Page, PerPage: page.PerPage, Total: count}, nil
+	return dto.Page[*apispecdoc.ApiSpecDoc]{Data: specDocs, Page: page.Page, PerPage: page.PerPage, Total: int(count)}, nil
 }
 
 func NewASDRepository(db *gorm.DB) apispecdoc.AsdRepository {

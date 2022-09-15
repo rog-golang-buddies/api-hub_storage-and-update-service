@@ -5,5 +5,5 @@ type Page[T any] struct {
 	Data    []T
 	Page    int
 	PerPage int
-	Total   int64
+	Total   int
 }
