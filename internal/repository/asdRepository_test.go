@@ -325,8 +325,16 @@ func TestSearchShort(t *testing.T) {
 	result, err := rep.SearchShort(context.Background(), "Google", number)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, result.Data[3].Title, entity.Title)
+	var resEntry *apispecdoc.ApiSpecDoc
+	for _, asdRec := range result.Data {
+		if asdRec.ID == entity.ID {
+			resEntry = asdRec
+			break
+		}
+	}
+	assert.NotNil(t, resEntry)
+	assert.Equal(t, resEntry.Title, entity.Title)
 	assert.Equal(t, number.Page, result.Page)
 	assert.Equal(t, number.PerPage, result.PerPage)
-	assert.GreaterOrEqual(t, int(result.Total), len(result.Data))
+	assert.GreaterOrEqual(t, result.Total, len(result.Data))
 }
