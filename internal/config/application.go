@@ -10,6 +10,7 @@ type ApplicationConfig struct {
 	Queue  QueueConfig
 	GRPC   GRPCConfig
 	DB     DbConfig
+	Page   PageConfig
 }
 
 // ReadConfig reads configuration from the environment and populates the structure with it
