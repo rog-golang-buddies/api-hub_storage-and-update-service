@@ -234,14 +234,99 @@ func TestSearchShort(t *testing.T) {
 	}
 	rep := AsdRepositoryImpl{db: gDb}
 	id, err := rep.Save(context.Background(), &entity)
-	number := dto.PageRequest{Page: 1}
 	assert.Nil(t, err)
 	assert.Equal(t, id, entity.ID)
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
+		Title:       "microsoft API",
+		Description: "API for microsoft",
+		Type:        "2",
+		Md5sum:      "asdf422423123jkj",
+		Groups:      groups,
+		Url:         "www.microsoft.com",
+		ApiMethods:  apiMeth,
+	}
+	id, err = rep.Save(context.Background(), &entity)
+	assert.Nil(t, err)
+	assert.Equal(t, id, entity.ID)
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
+		Title:       "amazon API",
+		Description: "API for amazon",
+		Type:        "2",
+		Md5sum:      "asdfoqwefjipqwef00",
+		Groups:      groups,
+		Url:         "www.amazon.com",
+		ApiMethods:  apiMeth,
+	}
+	id, err = rep.Save(context.Background(), &entity)
+	assert.Nil(t, err)
+	assert.Equal(t, id, entity.ID)
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
+		Title:       "netflix API",
+		Description: "API for netflix",
+		Type:        "2",
+		Md5sum:      "afqweqweqwe11123",
+		Groups:      groups,
+		Url:         "www.netflix.com",
+		ApiMethods:  apiMeth,
+	}
+	id, err = rep.Save(context.Background(), &entity)
+	assert.Nil(t, err)
+	assert.Equal(t, id, entity.ID)
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
+		Title:       "apple API",
+		Description: "API for apple",
+		Type:        "2",
+		Md5sum:      "vmmvmvmvfs89304",
+		Groups:      groups,
+		Url:         "www.apple.com",
+		ApiMethods:  apiMeth,
+	}
+	id, err = rep.Save(context.Background(), &entity)
+	assert.Nil(t, err)
+	assert.Equal(t, id, entity.ID)
+	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
+	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
+	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
+	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	entity = apispecdoc.ApiSpecDoc{
+		Title:       "Google 2 API",
+		Description: "API for Google 2",
+		Type:        "2",
+		Md5sum:      "bbbbb6b7bb77b",
+		Groups:      groups,
+		Url:         "www.Google-Google.com",
+		ApiMethods:  apiMeth,
+	}
+	id, err = rep.Save(context.Background(), &entity)
+	assert.Nil(t, err)
+	assert.Equal(t, id, entity.ID)
+	number := dto.PageRequest{Page: 4}
 	result, err := rep.SearchShort(context.Background(), "Google", number)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, result.Data[0].Title, entity.Title)
+	assert.Equal(t, result.Data[3].Title, entity.Title)
 	assert.Equal(t, number.Page, result.Page)
 	assert.Equal(t, number.PerPage, result.PerPage)
-	assert.GreaterOrEqual(t, result.Total, len(result.Data))
+	assert.GreaterOrEqual(t, result.Total, int64(len(result.Data)))
 }
