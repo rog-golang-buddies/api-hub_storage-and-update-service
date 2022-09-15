@@ -92,11 +92,16 @@ func (r *AsdRepositoryImpl) FindByUrl(ctx context.Context, url string) (*apispec
 func (r *AsdRepositoryImpl) SearchShort(ctx context.Context, search string, page dto.PageRequest) (dto.Page[*apispecdoc.ApiSpecDoc], error) {
 	var specDocs []*apispecdoc.ApiSpecDoc
 	var count int64
-	err := r.db.WithContext(ctx).Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").Offset(page.Page * page.PerPage).Limit(page.Page).Find(&specDocs).Error
+	err := r.db.WithContext(ctx).
+		Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").
+		Offset(page.Page * page.PerPage).Limit(page.PerPage).
+		Order("id").Find(&specDocs).Error
 	if err != nil {
 		return dto.Page[*apispecdoc.ApiSpecDoc]{}, err
 	}
-	err = r.db.WithContext(ctx).Model(&apispecdoc.ApiSpecDoc{}).Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").Count(&count).Error
+	err = r.db.WithContext(ctx).Model(&apispecdoc.ApiSpecDoc{}).
+		Where("title LIKE ?", "%"+search+"%").Or("url LIKE ?", "%"+search+"%").
+		Count(&count).Error
 	if err != nil {
 		return dto.Page[*apispecdoc.ApiSpecDoc]{}, err
 	}

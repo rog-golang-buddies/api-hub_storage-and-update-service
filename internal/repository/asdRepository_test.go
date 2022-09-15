@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"math"
 	"testing"
 
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
@@ -321,7 +322,7 @@ func TestSearchShort(t *testing.T) {
 	id, err = rep.Save(context.Background(), &entity)
 	assert.Nil(t, err)
 	assert.Equal(t, id, entity.ID)
-	number := dto.PageRequest{Page: 4}
+	number := dto.PageRequest{Page: 0, PerPage: math.MaxInt64}
 	result, err := rep.SearchShort(context.Background(), "Google", number)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
