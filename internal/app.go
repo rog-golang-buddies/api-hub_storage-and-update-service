@@ -10,6 +10,10 @@ import (
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/handler"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/queue/publisher"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/repository"
+
+	//"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/repository"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/service"
 )
 
 func Start() int {
@@ -26,11 +30,13 @@ func Start() int {
 		fmt.Println("error creating logger: ", err)
 		return 1
 	}
-	_, err = db.ConnectAndMigrate(log, &conf.DB)
+	DB, err := db.ConnectAndMigrate(log, &conf.DB)
 	if err != nil {
 		log.Error("error while db setup: ", err)
 		return 1
 	}
+	asdRepo := repository.NewASDRepository(DB)
+	asdServ := service.NewService(log, asdRepo, &conf.Page)
 
 	//initialize publisher connection to the queue
 	//this library assumes using one publisher and one consumer per application
@@ -49,7 +55,7 @@ func Start() int {
 	}
 	defer queue.CloseConsumer(consumer, log)
 
-	handl := handler.NewApiSpecDocHandler(pub, conf.Queue, log)
+	handl := handler.NewApiSpecDocHandler(pub, conf.Queue, log, asdServ)
 	listener := queue.NewListener()
 	err = listener.Start(ctx, consumer, &conf.Queue, handl)
 	if err != nil {
@@ -63,7 +69,7 @@ func Start() int {
 		log.Error("error creating grpc listener: ", err)
 		return 1
 	}
-	asdSrv := grpc.NewASDServer(log)
+	asdSrv := grpc.NewASDServer(log, asdServ)
 	errCh := grpc.StartServer(ctx, log, asdSrv, lst)
 
 	<-errCh

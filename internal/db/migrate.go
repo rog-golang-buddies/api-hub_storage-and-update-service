@@ -15,7 +15,7 @@ import (
 )
 
 //go:embed migrations/*.sql
-var fs embed.FS
+var FS embed.FS
 
 func Migrate(db *sql.DB, fsDriver source.Driver, conf *config.DbConfig) error {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
@@ -44,7 +44,7 @@ func ConnectAndMigrate(log logger.Logger, conf *config.DbConfig) (*gorm.DB, erro
 	if err != nil {
 		return nil, err
 	}
-	fsDriver, err := iofs.New(fs, "migrations")
+	fsDriver, err := iofs.New(FS, "migrations")
 	if err != nil {
 		return nil, err
 	}

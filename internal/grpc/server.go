@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
 	"github.com/rog-golang-buddies/api_hub_common/apispecproto"
@@ -13,24 +13,24 @@ import (
 
 type ApiSpecDocServerImpl struct {
 	apispecproto.UnimplementedApiSpecDocServer
-	log logger.Logger
+	service apispecdoc.Service
+	log     logger.Logger
 }
 
 func (asds *ApiSpecDocServerImpl) Search(ctx context.Context, req *apispecproto.SearchRequest) (*apispecproto.SearchResponse, error) {
-	//TODO implement me
 	asds.log.Info("Search: ", req)
-	return nil, errors.New("not implemented")
+	return asds.service.Search(ctx, req)
 }
 
 func (asds *ApiSpecDocServerImpl) Get(ctx context.Context, req *apispecproto.GetRequest) (*apispecproto.GetResponse, error) {
-	//TODO implement me
 	asds.log.Info("Get: ", req)
-	return nil, errors.New("not implemented")
+	return asds.service.Get(ctx, req)
 }
 
-func NewASDServer(log logger.Logger) apispecproto.ApiSpecDocServer {
+func NewASDServer(log logger.Logger, service apispecdoc.Service) apispecproto.ApiSpecDocServer {
 	return &ApiSpecDocServerImpl{
-		log: log,
+		log:     log,
+		service: service,
 	}
 }
 

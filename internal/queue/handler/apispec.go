@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
-
+	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/apispecdoc"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/config"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/dto"
 	"github.com/rog-golang-buddies/api-hub_storage-and-update-service/internal/logger"
@@ -13,13 +13,14 @@ import (
 )
 
 type ApiSpecDocHandler struct {
-	publisher publisher.Publisher
-	config    config.QueueConfig
-	log       logger.Logger
+	publisher  publisher.Publisher
+	config     config.QueueConfig
+	asdService apispecdoc.Service
+	log        logger.Logger
 }
 
 func (asdh *ApiSpecDocHandler) Handle(ctx context.Context, delivery rabbitmq.Delivery) rabbitmq.Action {
-	asdh.log.Infof("consumed: %v", string(delivery.Body))
+
 	//get link to API from queue and unmarshal json response to req
 	var req dto.ScrapingResult
 	err := json.Unmarshal(delivery.Body, &req)
@@ -35,16 +36,41 @@ func (asdh *ApiSpecDocHandler) Handle(ctx context.Context, delivery rabbitmq.Del
 		}
 		return rabbitmq.NackDiscard
 	}
+	if req.ApiSpecDoc == nil {
+		if req.IsNotifyUser {
+			asdh.notifyUser(&delivery, &dto.ProcessingError{
+				Message: "nil body request received",
+			})
+		}
+		return rabbitmq.NackDiscard
+	}
+	asdh.log.Infof("consumed ASD: name: %s; md5: %s", req.ApiSpecDoc.Title, req.ApiSpecDoc.Md5Sum)
+
+	_, err = asdh.asdService.Save(ctx, req.ApiSpecDoc)
+	if err != nil {
+		asdh.log.Error("error while saving ASD: ", err)
+		if req.IsNotifyUser {
+			asdh.notifyUser(&delivery, &dto.ProcessingError{
+				Cause:   err.Error(),
+				Message: "error while saving",
+			})
+		}
+		return rabbitmq.NackDiscard
+	}
 
 	if req.IsNotifyUser {
-		err = asdh.publish(&delivery, dto.NewUserNotification(nil), asdh.config.NotificationQueue)
-		if err != nil {
-			asdh.log.Error("error while notifying user")
-			//don't discard this message because it was published to the storage service successfully
-		}
+		asdh.notifyUser(&delivery, nil)
 	}
-	asdh.log.Info("url scraped successfully")
+	asdh.log.Info("API specification document saved/updated successfully")
 	return rabbitmq.Ack
+}
+
+func (asdh *ApiSpecDocHandler) notifyUser(delivery *rabbitmq.Delivery, procErr *dto.ProcessingError) {
+	err := asdh.publish(delivery, dto.NewUserNotification(procErr), asdh.config.NotificationQueue)
+	if err != nil {
+		asdh.log.Error("error while notifying user")
+		//don't discard this message because it was published to the storage service successfully
+	}
 }
 
 func (asdh *ApiSpecDocHandler) publish(delivery *rabbitmq.Delivery, message any, queue string) error {
@@ -61,12 +87,12 @@ func (asdh *ApiSpecDocHandler) publish(delivery *rabbitmq.Delivery, message any,
 	)
 }
 
-func NewApiSpecDocHandler(publisher publisher.Publisher,
-	config config.QueueConfig,
-	log logger.Logger) Handler {
+func NewApiSpecDocHandler(publisher publisher.Publisher, config config.QueueConfig,
+	log logger.Logger, asdService apispecdoc.Service) Handler {
 	return &ApiSpecDocHandler{
-		publisher: publisher,
-		config:    config,
-		log:       log,
+		publisher:  publisher,
+		config:     config,
+		asdService: asdService,
+		log:        log,
 	}
 }
