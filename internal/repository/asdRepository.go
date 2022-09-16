@@ -43,7 +43,13 @@ func (r *AsdRepositoryImpl) Update(ctx context.Context, asd *apispecdoc.ApiSpecD
 
 func (r *AsdRepositoryImpl) FindById(ctx context.Context, id uint) (*apispecdoc.ApiSpecDoc, error) {
 	var specDocs []*apispecdoc.ApiSpecDoc
-	err := r.db.WithContext(ctx).Where("id = ?", id).Preload(clause.Associations).Find(&specDocs).Error
+	err := r.db.WithContext(ctx).
+		Where("id = ?", id).
+		Preload("ApiMethods.Servers").
+		Preload("Groups.ApiMethods.Servers").
+		Preload("ApiMethods.ExternalDoc").
+		Preload("Groups.ApiMethods.ExternalDoc").
+		Preload(clause.Associations).Find(&specDocs).Error
 	if err != nil {
 		return nil, err
 	}

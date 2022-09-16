@@ -143,10 +143,24 @@ func TestFindById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, id, entity.ID)
 	servG = []*apispecdoc.Server{{URL: "test google url", Description: "test description Google"}}
-	apiMethG = []*apispecdoc.ApiMethod{{Path: "test/path", Name: "test Google", Servers: servG}}
+	apiMethG = []*apispecdoc.ApiMethod{
+		{
+			Path:        "test/path",
+			Name:        "test Google",
+			Servers:     servG,
+			ExternalDoc: &apispecdoc.ExternalDoc{URL: "some doc url"},
+		},
+	}
 	groups = []*apispecdoc.Group{{Name: "test google", ApiMethods: apiMethG}}
 	servs = []*apispecdoc.Server{{URL: "test servG", Description: "test Goggle 2"}}
-	apiMeth = []*apispecdoc.ApiMethod{{Path: "test2/path", Name: "second test method", Servers: servs}}
+	apiMeth = []*apispecdoc.ApiMethod{
+		{
+			Path:        "test2/path",
+			Name:        "second test method",
+			Servers:     servs,
+			ExternalDoc: &apispecdoc.ExternalDoc{URL: "some doc url 2"},
+		},
+	}
 	entity = apispecdoc.ApiSpecDoc{
 		Title:       "Google API",
 		Description: "API for Google",
@@ -164,6 +178,16 @@ func TestFindById(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, result.ID, entity.ID)
 	assert.Equal(t, result.Type, entity.Type)
+	assert.NotNil(t, result.ApiMethods)
+	assert.Equal(t, len(entity.ApiMethods), len(result.ApiMethods))
+	assert.Equal(t, len(entity.Groups), len(result.Groups))
+	rootMethod := result.ApiMethods[0]
+	assert.Equal(t, 1, len(rootMethod.Servers))
+	assert.NotNil(t, rootMethod.ExternalDoc)
+	groupEl := result.Groups[0]
+	groupMethod := groupEl.ApiMethods[0]
+	assert.Equal(t, 1, len(groupMethod.Servers))
+	assert.NotNil(t, groupMethod.ExternalDoc)
 }
 
 func TestFindByHash(t *testing.T) {
