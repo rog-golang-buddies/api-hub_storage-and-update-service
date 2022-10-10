@@ -13,7 +13,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.14.0
 	github.com/wagslane/go-rabbitmq v0.10.0
 	go.uber.org/zap v1.23.0
-	google.golang.org/grpc v1.49.0
+	google.golang.org/grpc v1.50.0
 	gorm.io/driver/postgres v1.3.9
 	gorm.io/gorm v1.23.8
 )
