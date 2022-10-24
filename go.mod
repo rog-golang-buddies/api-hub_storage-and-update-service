@@ -9,7 +9,7 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/pkg/errors v0.9.1
 	github.com/rog-golang-buddies/api_hub_common v0.1.5
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.14.0
 	github.com/wagslane/go-rabbitmq v0.10.0
 	go.uber.org/zap v1.23.0
